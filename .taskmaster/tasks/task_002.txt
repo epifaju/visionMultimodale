@@ -1,0 +1,62 @@
+# Tâche 2: Configuration de la base de données PostgreSQL
+
+**Description:** Mettre en place la base de données PostgreSQL avec les entités JPA de base
+
+**Détails:** Configurer la connexion à PostgreSQL, créer les entités User, Document et AuditLog, implémenter les repositories JPA, et configurer les migrations de base de données.
+
+**Stratégie de test:** Vérifier la connexion à la base de données, tester la création des tables, et valider les opérations CRUD de base.
+
+**Priorité:** High
+**Statut:** Pending
+**Dépendances:** Tâche 1
+
+## Sous-tâches:
+
+### 2.1 - Configurer la connexion PostgreSQL
+- **Description:** Configurer la connexion à la base de données PostgreSQL dans Spring Boot
+- **Détails:** Ajouter les propriétés de connexion dans application.properties, configurer le pool de connexions HikariCP, et tester la connectivité.
+- **Stratégie de test:** Vérifier que l'application peut se connecter à PostgreSQL et que les tables sont créées automatiquement.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 2.2 - Créer l'entité User avec JPA
+- **Description:** Créer l'entité JPA pour la gestion des utilisateurs
+- **Détails:** Créer la classe User avec les champs : id, username, email, password (encodé), role (ADMIN/USER), et les annotations JPA appropriées.
+- **Stratégie de test:** Vérifier que l'entité est correctement mappée en base et que les contraintes sont respectées.
+- **Priorité:** High
+- **Dépendances:** 2.1
+
+### 2.3 - Créer l'entité Document avec JPA
+- **Description:** Créer l'entité JPA pour la gestion des documents traités
+- **Détails:** Créer la classe Document avec les champs : id, fileName, fileType, extractedText, uploadedAt, et la relation ManyToOne avec User.
+- **Stratégie de test:** Vérifier que l'entité est correctement mappée et que les relations sont fonctionnelles.
+- **Priorité:** High
+- **Dépendances:** 2.2
+
+### 2.4 - Créer l'entité AuditLog avec JPA
+- **Description:** Créer l'entité JPA pour la journalisation des actions
+- **Détails:** Créer la classe AuditLog avec les champs : id, action, entityType, entityId, userId, timestamp, et les détails de l'action.
+- **Stratégie de test:** Vérifier que l'entité est correctement mappée et que les logs sont persistés.
+- **Priorité:** Medium
+- **Dépendances:** 2.2
+
+### 2.5 - Créer les repositories JPA
+- **Description:** Créer les interfaces repository pour chaque entité
+- **Détails:** Créer UserRepository, DocumentRepository, et AuditLogRepository avec les méthodes de base et les requêtes personnalisées nécessaires.
+- **Stratégie de test:** Vérifier que tous les repositories fonctionnent et que les requêtes retournent les bonnes données.
+- **Priorité:** Medium
+- **Dépendances:** 2.3, 2.4
+
+### 2.6 - Configurer les migrations de base de données
+- **Description:** Configurer Flyway ou Liquibase pour la gestion des migrations
+- **Détails:** Configurer le système de migrations, créer le script de création des tables, et configurer l'ordre d'exécution des migrations.
+- **Stratégie de test:** Vérifier que les migrations s'exécutent correctement et que la structure de la base est conforme.
+- **Priorité:** Medium
+- **Dépendances:** 2.5
+
+### 2.7 - Créer les services de base de données
+- **Description:** Créer les services métier pour la gestion des entités
+- **Détails:** Créer UserService, DocumentService, et AuditLogService avec la logique métier et la gestion des transactions.
+- **Stratégie de test:** Vérifier que tous les services fonctionnent et que les transactions sont gérées correctement.
+- **Priorité:** Medium
+- **Dépendances:** 2.6

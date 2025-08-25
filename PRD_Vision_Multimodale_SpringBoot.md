@@ -1,0 +1,187 @@
+
+# PRD — Application Multimodale de Vision par Ordinateur Assistée par IA
+
+## 1. Objectif
+Développer une application **full-stack** permettant :
+- Lecture et extraction d'informations depuis **PDF** et **images**.
+- OCR multilingue via **Tesseract (Tess4J)**.
+- Lecture de **codes-barres** et **QR codes** via **ZXing**.
+- Extraction de la MRZ pour **passeports** et **CNI**.
+- Analyse des données via **Ollama** (LLM).
+- Authentification **JWT** avec rôles.
+- Journalisation complète via **Audit Logging**.
+
+## 2. Stack technique
+| Composant | Technologie |
+|-----------|------------|
+| **Backend** | Spring Boot 3.3+ (Java 21) |
+| **Frontend** | React 18 + Vite + TailwindCSS |
+| **Base de données** | PostgreSQL 15 |
+| **OCR** | Tesseract (Tess4J) |
+| **PDF Parsing** | Apache PDFBox |
+| **Codes-barres** | ZXing |
+| **MRZ** | PassportEye |
+| **LLM** | Ollama |
+| **Auth** | Spring Security + JWT |
+| **Audit** | Spring AOP |
+| **Conteneurs** | Docker + Docker Compose |
+
+## 3. Fonctionnalités principales
+
+### 3.1 Authentification & Rôles
+- JWT Authentication avec Spring Security.
+- Rôles : **ADMIN** et **USER**.
+- Gestion complète du cycle de vie des tokens.
+
+### 3.2 OCR & Lecture PDF
+- Upload d'images ou PDF.
+- Extraction multilingue via Tesseract.
+- Extraction de texte via PDFBox.
+
+### 3.3 Lecture Codes-Barres
+- Support : QR, EAN, UPC, Code128, Code39.
+- Intégration via ZXing.
+
+### 3.4 MRZ & Passeports
+- Détection automatique de la zone MRZ.
+- Extraction : nom, prénom, date de naissance, numéro de document.
+
+### 3.5 Ollama LLM
+- API REST Ollama : `http://localhost:11434/api/generate`
+- Analyse, structuration et résumé des données extraites.
+
+### Exemple d’appel API Ollama :
+
+```java
+@Service
+public class OllamaService {
+
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final String ollamaUrl = "http://ollama:11434/api/generate";
+
+    public String analyzeDocument(String text) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("model", "llama3");
+        payload.put("prompt", "Analyse et structure les données suivantes : " + text);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+        return restTemplate.postForObject(ollamaUrl, request, String.class);
+    }
+}
+```
+
+## 4. Base de données
+
+### 4.1 Tables principales
+- **users** : gestion des comptes utilisateurs.
+- **documents** : métadonnées fichiers + texte OCR.
+- **audit_logs** : traçabilité des actions.
+
+### 4.2 Exemple entité JPA
+```java
+@Entity
+@Table(name = "documents")
+@Data
+public class Document {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String fileName;
+    private String fileType;
+    private String extractedText;
+    private LocalDateTime uploadedAt;
+
+    @ManyToOne
+    private User uploadedBy;
+}
+```
+
+## 5. Docker Compose
+
+```yaml
+version: '3.9'
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - ollama
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: vision
+      POSTGRES_PASSWORD: vision
+      POSTGRES_DB: vision
+    ports:
+      - "5432:5432"
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama:/root/.ollama
+```
+
+## 6. Scripts Makefile
+
+```makefile
+install:
+	cd backend && ./mvnw clean install
+	cd frontend && npm install
+
+start:
+	docker-compose up --build
+
+lint:
+	cd backend && ./mvnw checkstyle:check
+	cd frontend && npm run lint
+
+format:
+	cd backend && ./mvnw spotless:apply
+	cd frontend && npm run format
+
+seed:
+	cd backend && ./mvnw spring-boot:run -Dspring-boot.run.arguments=--seed
+
+reset:
+	docker-compose down -v && docker-compose up --build
+```
+
+## 7. Instructions pour Cursor / Cline
+
+1. Déposer ce fichier dans Cursor.
+2. Lancer la commande :
+```bash
+Generate project from PRD
+```
+3. Cursor va générer :
+   - Backend Spring Boot complet
+   - Frontend React + Tailwind
+   - Authentification JWT
+   - Intégration OCR, PDF, MRZ, codes-barres
+   - API Ollama connectée
+   - Docker Compose prêt
+
+## 8. Livrables finaux
+- **Backend Spring Boot complet**
+- **Frontend React** avec pages upload + dashboard
+- **Pipeline CI/CD**
+- **Tests automatisés**
+- **Documentation complète**
+
+---
+
+**Auteur :** GPT-5 — Application Multimodale Vision IA  
+**Version :** 1.0

@@ -1,0 +1,62 @@
+# Tâche 8: Intégration Ollama LLM
+
+**Description:** Connecter l'API Ollama pour l'analyse et la structuration des données extraites
+
+**Détails:** Créer le service OllamaService, implémenter l'appel à l'API REST Ollama, gérer les prompts pour l'analyse des documents, et structurer les réponses du LLM.
+
+**Stratégie de test:** Tester la connexion à Ollama, valider les réponses du LLM, et tester la structuration des données extraites.
+
+**Priorité:** Medium
+**Statut:** Pending
+**Dépendances:** Tâches 4, 5, 6, 7
+
+## Sous-tâches:
+
+### 8.1 - Configurer le service Ollama dans Docker
+- **Description:** Configurer le service Ollama dans l'environnement Docker
+- **Détails:** Modifier le docker-compose.yml pour inclure le service Ollama, configurer les volumes et les variables d'environnement, et télécharger le modèle llama3.
+- **Stratégie de test:** Vérifier que le service Ollama démarre correctement et que le modèle est disponible.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 8.2 - Créer le service OllamaService
+- **Description:** Créer le service principal pour l'intégration avec Ollama
+- **Détails:** Créer OllamaService avec les méthodes de base, configurer RestTemplate, et implémenter la gestion des erreurs et exceptions.
+- **Stratégie de test:** Vérifier que le service peut se connecter à Ollama et gérer les erreurs de connexion.
+- **Priorité:** High
+- **Dépendances:** 8.1
+
+### 8.3 - Implémenter l'appel à l'API REST Ollama
+- **Description:** Implémenter l'appel à l'API REST Ollama pour la génération de texte
+- **Détails:** Créer les méthodes d'appel à l'API Ollama, gérer les requêtes HTTP, et implémenter la gestion des réponses et des erreurs.
+- **Stratégie de test:** Tester l'appel à l'API Ollama, valider les réponses, et tester la gestion des erreurs de réseau.
+- **Priorité:** High
+- **Dépendances:** 8.2
+
+### 8.4 - Créer les prompts pour l'analyse des documents
+- **Description:** Créer des prompts optimisés pour l'analyse des différents types de documents
+- **Détails:** Créer des prompts spécialisés pour l'OCR, les PDF, les codes-barres, et les documents MRZ, optimiser pour la structuration des données.
+- **Stratégie de test:** Tester les prompts sur différents types de documents, valider la qualité des réponses, et optimiser les prompts.
+- **Priorité:** Medium
+- **Dépendances:** 8.3
+
+### 8.5 - Structurer les réponses du LLM
+- **Description:** Implémenter la structuration et le traitement des réponses du LLM
+- **Détails:** Créer des modèles de données pour structurer les réponses, implémenter le parsing des réponses JSON, et gérer la validation des données.
+- **Stratégie de test:** Tester la structuration des réponses, valider le parsing JSON, et vérifier la cohérence des données structurées.
+- **Priorité:** Medium
+- **Dépendances:** 8.4
+
+### 8.6 - Créer les endpoints d'API LLM
+- **Description:** Créer les contrôleurs REST pour l'API d'analyse LLM
+- **Détails:** Créer OllamaController avec les endpoints POST /llm/analyze et GET /llm/models, gérer l'analyse des documents et le retour des résultats structurés.
+- **Stratégie de test:** Tester les endpoints avec différents types de documents, valider les réponses JSON, et tester la gestion des erreurs.
+- **Priorité:** Medium
+- **Dépendances:** 8.5
+
+### 8.7 - Créer les tests LLM
+- **Description:** Créer une suite de tests complète pour l'intégration Ollama
+- **Détails:** Créer des tests unitaires pour OllamaService, des tests d'intégration pour les endpoints, et des tests avec des documents de référence.
+- **Stratégie de test:** Exécuter tous les tests LLM, vérifier la couverture de code, et valider les performances de l'intégration.
+- **Priorité:** Medium
+- **Dépendances:** 8.6

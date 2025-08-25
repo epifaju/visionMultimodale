@@ -1,0 +1,55 @@
+# Tâche 6: Service de lecture de codes-barres avec ZXing
+
+**Description:** Intégrer ZXing pour la lecture de QR codes et codes-barres
+
+**Détails:** Configurer ZXing, implémenter la détection et lecture de QR codes, EAN, UPC, Code128, Code39, et créer les endpoints d'API correspondants.
+
+**Stratégie de test:** Tester la lecture de différents types de codes-barres, valider la précision de détection, et tester la gestion des images de mauvaise qualité.
+
+**Priorité:** Medium
+**Statut:** Pending
+**Dépendances:** Tâche 3
+
+## Sous-tâches:
+
+### 6.1 - Ajouter les dépendances ZXing dans pom.xml
+- **Description:** Intégrer ZXing et les dépendances nécessaires pour la lecture de codes-barres
+- **Détails:** Ajouter les dépendances ZXing, configurer les versions compatibles, et vérifier que les bibliothèques sont disponibles.
+- **Stratégie de test:** Vérifier que le projet compile avec ZXing et que les dépendances sont résolues.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 6.2 - Créer le service de détection de codes-barres
+- **Description:** Créer le service principal pour la détection et lecture de codes-barres
+- **Détails:** Créer BarcodeService avec les méthodes de base, configurer ZXing, et implémenter la gestion des erreurs et exceptions.
+- **Stratégie de test:** Vérifier que le service peut détecter des codes-barres simples et gérer les erreurs de traitement.
+- **Priorité:** High
+- **Dépendances:** 6.1
+
+### 6.3 - Implémenter la lecture de QR codes
+- **Description:** Implémenter la détection et lecture de QR codes
+- **Détails:** Créer les méthodes de lecture de QR codes, gérer différents formats de QR codes, et extraire les informations encodées.
+- **Stratégie de test:** Tester la lecture de différents types de QR codes, valider la précision de détection, et vérifier l'extraction des données.
+- **Priorité:** High
+- **Dépendances:** 6.2
+
+### 6.4 - Implémenter la lecture de codes-barres (EAN, UPC, Code128, Code39)
+- **Description:** Implémenter la détection et lecture de différents types de codes-barres
+- **Détails:** Créer les méthodes de lecture pour EAN, UPC, Code128, Code39, gérer les différents formats, et extraire les informations.
+- **Stratégie de test:** Tester la lecture de différents types de codes-barres, valider la précision de détection, et vérifier l'extraction des données.
+- **Priorité:** High
+- **Dépendances:** 6.3
+
+### 6.5 - Créer les endpoints d'API codes-barres
+- **Description:** Créer les contrôleurs REST pour l'API de lecture de codes-barres
+- **Détails:** Créer BarcodeController avec les endpoints POST /barcode/process-image et GET /barcode/types, gérer l'upload d'images et le retour des résultats.
+- **Stratégie de test:** Tester les endpoints avec différents types de codes-barres, valider les réponses JSON, et tester la gestion des erreurs.
+- **Priorité:** Medium
+- **Dépendances:** 6.4
+
+### 6.6 - Créer les tests codes-barres
+- **Description:** Créer une suite de tests complète pour le service de codes-barres
+- **Détails:** Créer des tests unitaires pour BarcodeService, des tests d'intégration pour les endpoints, et des tests avec des images de référence.
+- **Stratégie de test:** Exécuter tous les tests de codes-barres, vérifier la couverture de code, et valider les performances.
+- **Priorité:** Medium
+- **Dépendances:** 6.5

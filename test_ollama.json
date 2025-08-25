@@ -1,0 +1,5 @@
+{
+  "model": "llama3:latest",
+  "prompt": "Bonjour, peux-tu me dire bonjour en français ?",
+  "stream": false
+}

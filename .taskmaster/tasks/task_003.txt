@@ -1,0 +1,62 @@
+# Tâche 3: Authentification JWT avec Spring Security
+
+**Description:** Implémenter l'authentification JWT avec gestion des rôles ADMIN et USER
+
+**Détails:** Configurer Spring Security, créer les services d'authentification et d'autorisation, implémenter la gestion des tokens JWT, et créer les endpoints de login/logout.
+
+**Stratégie de test:** Tester l'authentification avec différents rôles, vérifier la validité des tokens JWT, et tester l'accès aux ressources protégées.
+
+**Priorité:** High
+**Statut:** Pending
+**Dépendances:** Tâche 2
+
+## Sous-tâches:
+
+### 3.1 - Configurer Spring Security de base
+- **Description:** Configurer la configuration de base de Spring Security
+- **Détails:** Créer la classe de configuration SecurityConfig, configurer les règles de sécurité de base, et désactiver CSRF pour l'API REST.
+- **Stratégie de test:** Vérifier que la configuration de sécurité est active et que les endpoints sont correctement protégés.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 3.2 - Créer le service d'authentification
+- **Description:** Créer le service d'authentification personnalisé
+- **Détails:** Créer CustomUserDetailsService qui implémente UserDetailsService, charger les utilisateurs depuis la base de données, et gérer les rôles.
+- **Stratégie de test:** Vérifier que le service charge correctement les utilisateurs et leurs rôles depuis la base de données.
+- **Priorité:** High
+- **Dépendances:** 3.1
+
+### 3.3 - Implémenter la génération et validation des tokens JWT
+- **Description:** Créer le service JWT pour la gestion des tokens
+- **Détails:** Créer JwtService avec les méthodes de génération, validation, et extraction des claims JWT, configurer la clé secrète et la durée de vie des tokens.
+- **Stratégie de test:** Vérifier que les tokens sont générés correctement, qu'ils sont valides, et qu'ils expirent selon la configuration.
+- **Priorité:** High
+- **Dépendances:** 3.2
+
+### 3.4 - Créer les endpoints de login/logout
+- **Description:** Créer le contrôleur d'authentification avec les endpoints REST
+- **Détails:** Créer AuthController avec les endpoints POST /auth/login et POST /auth/logout, gérer la validation des credentials, et retourner les tokens JWT.
+- **Stratégie de test:** Tester le login avec des credentials valides et invalides, vérifier la génération des tokens, et tester le logout.
+- **Priorité:** High
+- **Dépendances:** 3.3
+
+### 3.5 - Configurer la gestion des rôles (ADMIN/USER)
+- **Description:** Implémenter la gestion des autorisations basées sur les rôles
+- **Détails:** Configurer les règles d'autorisation pour les différents rôles, créer les annotations @PreAuthorize, et implémenter la logique de contrôle d'accès.
+- **Stratégie de test:** Tester l'accès aux ressources avec différents rôles, vérifier que les restrictions sont respectées, et tester les cas d'erreur.
+- **Priorité:** Medium
+- **Dépendances:** 3.4
+
+### 3.6 - Implémenter la protection des endpoints
+- **Description:** Protéger tous les endpoints de l'application avec Spring Security
+- **Détails:** Configurer la protection des endpoints publics et privés, implémenter le filtre JWT, et gérer les exceptions d'authentification.
+- **Stratégie de test:** Vérifier que tous les endpoints sont correctement protégés, tester l'accès avec et sans tokens valides.
+- **Priorité:** Medium
+- **Dépendances:** 3.5
+
+### 3.7 - Créer les tests d'authentification
+- **Description:** Créer une suite de tests complète pour l'authentification
+- **Détails:** Créer des tests unitaires pour les services, des tests d'intégration pour les endpoints, et des tests de sécurité pour valider la protection.
+- **Stratégie de test:** Exécuter tous les tests et vérifier qu'ils passent, couvrir les cas d'erreur et les scénarios de sécurité.
+- **Priorité:** Medium
+- **Dépendances:** 3.6

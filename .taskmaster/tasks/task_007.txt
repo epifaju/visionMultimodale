@@ -1,0 +1,62 @@
+# Tâche 7: Service MRZ pour passeports et CNI
+
+**Description:** Implémenter l'extraction MRZ avec PassportEye
+
+**Détails:** Intégrer PassportEye, créer le service de détection automatique de la zone MRZ, extraire les informations (nom, prénom, date de naissance, numéro de document), et valider les données extraites.
+
+**Stratégie de test:** Tester l'extraction MRZ sur différents types de documents, valider la précision des informations extraites, et tester la gestion des documents de mauvaise qualité.
+
+**Priorité:** Medium
+**Statut:** Pending
+**Dépendances:** Tâche 3
+
+## Sous-tâches:
+
+### 7.1 - Ajouter les dépendances PassportEye dans pom.xml
+- **Description:** Intégrer PassportEye et les dépendances nécessaires pour l'extraction MRZ
+- **Détails:** Ajouter les dépendances PassportEye, configurer les versions compatibles, et vérifier que les bibliothèques sont disponibles.
+- **Stratégie de test:** Vérifier que le projet compile avec PassportEye et que les dépendances sont résolues.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 7.2 - Créer le service de détection MRZ
+- **Description:** Créer le service principal pour la détection et extraction MRZ
+- **Détails:** Créer MrzService avec les méthodes de base, configurer PassportEye, et implémenter la gestion des erreurs et exceptions.
+- **Stratégie de test:** Vérifier que le service peut détecter des zones MRZ simples et gérer les erreurs de traitement.
+- **Priorité:** High
+- **Dépendances:** 7.1
+
+### 7.3 - Implémenter la détection automatique de la zone MRZ
+- **Description:** Implémenter la détection automatique de la zone MRZ sur les documents
+- **Détails:** Créer les méthodes de détection automatique, gérer différents types de documents (passeports, CNI), et optimiser la précision de détection.
+- **Stratégie de test:** Tester la détection sur différents types de documents, valider la précision de détection, et vérifier la gestion des cas spéciaux.
+- **Priorité:** High
+- **Dépendances:** 7.2
+
+### 7.4 - Extraire les informations de base (nom, prénom)
+- **Description:** Implémenter l'extraction des informations de base depuis la zone MRZ
+- **Détails:** Créer les méthodes d'extraction du nom et prénom, gérer les différents formats de noms, et valider la qualité des données extraites.
+- **Stratégie de test:** Tester l'extraction sur des documents avec des noms variés, valider la précision, et vérifier la gestion des caractères spéciaux.
+- **Priorité:** High
+- **Dépendances:** 7.3
+
+### 7.5 - Extraire les informations avancées (date de naissance, numéro)
+- **Description:** Implémenter l'extraction des informations avancées depuis la zone MRZ
+- **Détails:** Créer les méthodes d'extraction de la date de naissance et du numéro de document, gérer les différents formats, et valider la cohérence des données.
+- **Stratégie de test:** Tester l'extraction sur des documents avec des formats variés, valider la précision des dates et numéros, et vérifier la validation des données.
+- **Priorité:** Medium
+- **Dépendances:** 7.4
+
+### 7.6 - Créer les endpoints d'API MRZ
+- **Description:** Créer les contrôleurs REST pour l'API d'extraction MRZ
+- **Détails:** Créer MrzController avec les endpoints POST /mrz/process-document et GET /mrz/validate, gérer l'upload de documents et le retour des résultats.
+- **Stratégie de test:** Tester les endpoints avec différents types de documents, valider les réponses JSON, et tester la gestion des erreurs.
+- **Priorité:** Medium
+- **Dépendances:** 7.5
+
+### 7.7 - Créer les tests MRZ
+- **Description:** Créer une suite de tests complète pour le service MRZ
+- **Détails:** Créer des tests unitaires pour MrzService, des tests d'intégration pour les endpoints, et des tests avec des documents de référence.
+- **Stratégie de test:** Exécuter tous les tests MRZ, vérifier la couverture de code, et valider les performances sur différents types de documents.
+- **Priorité:** Medium
+- **Dépendances:** 7.6

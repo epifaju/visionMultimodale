@@ -1,0 +1,72 @@
+version: '3.9'
+
+services:
+  # Base de données PostgreSQL
+  db:
+    image: postgres:15
+    container_name: vision-postgres
+    environment:
+      POSTGRES_USER: vision
+      POSTGRES_PASSWORD: vision
+      POSTGRES_DB: vision
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vision-network
+
+  # Service Ollama pour le LLM
+  ollama:
+    image: ollama/ollama:latest
+    container_name: vision-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - vision-network
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+
+  # Backend Spring Boot
+  backend:
+    build: ./backend
+    container_name: vision-backend
+    ports:
+      - "8080:8080"  # Exposer sur le port 8080
+    depends_on:
+      - db
+      - ollama
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - OLLAMA_URL=http://ollama:11434/api/generate
+    volumes:
+      - ./backend:/app
+      - /app/target
+    networks:
+      - vision-network
+
+  # Frontend React
+  frontend:
+    build: ./frontend
+    container_name: vision-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    networks:
+      - vision-network
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  ollama_data:
+
+networks:
+  vision-network:
+    driver: bridge

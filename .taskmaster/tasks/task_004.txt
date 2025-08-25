@@ -1,0 +1,62 @@
+# Tâche 4: Service OCR avec Tesseract (Tess4J)
+
+**Description:** Intégrer Tesseract pour l'extraction de texte multilingue depuis les images
+
+**Détails:** Configurer Tess4J, créer le service OCR pour traiter les images, gérer le support multilingue, et optimiser la qualité de reconnaissance.
+
+**Stratégie de test:** Tester l'extraction de texte sur différents types d'images, valider la précision de l'OCR, et tester le support multilingue.
+
+**Priorité:** Medium
+**Statut:** Pending
+**Dépendances:** Tâche 3
+
+## Sous-tâches:
+
+### 4.1 - Ajouter les dépendances Tess4J dans pom.xml
+- **Description:** Intégrer Tess4J et les dépendances nécessaires pour Tesseract
+- **Détails:** Ajouter les dépendances Tess4J, configurer les versions compatibles, et vérifier que les bibliothèques natives sont disponibles.
+- **Stratégie de test:** Vérifier que le projet compile avec Tess4J et que les dépendances sont résolues.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 4.2 - Configurer Tesseract dans l'environnement Docker
+- **Description:** Configurer Tesseract et les langues dans le conteneur Docker
+- **Détails:** Modifier le Dockerfile pour installer Tesseract, télécharger les langues français et anglais, et configurer les variables d'environnement.
+- **Stratégie de test:** Vérifier que Tesseract est installé et que les langues sont disponibles dans le conteneur.
+- **Priorité:** High
+- **Dépendances:** 4.1
+
+### 4.3 - Créer le service OCR de base
+- **Description:** Créer le service principal pour le traitement OCR des images
+- **Détails:** Créer OcrService avec les méthodes de base, configurer l'instance Tesseract, et implémenter la gestion des erreurs.
+- **Stratégie de test:** Vérifier que le service peut traiter des images simples et gérer les erreurs de traitement.
+- **Priorité:** High
+- **Dépendances:** 4.2
+
+### 4.4 - Implémenter le support multilingue
+- **Description:** Ajouter le support pour plusieurs langues dans le service OCR
+- **Détails:** Implémenter la détection automatique de langue, configurer le support français/anglais, et créer les méthodes de changement de langue.
+- **Stratégie de test:** Tester la détection automatique de langue et la reconnaissance dans différentes langues.
+- **Priorité:** Medium
+- **Dépendances:** 4.3
+
+### 4.5 - Créer les endpoints d'API OCR
+- **Description:** Créer les contrôleurs REST pour l'API OCR
+- **Détails:** Créer OcrController avec les endpoints POST /ocr/process-image et GET /ocr/languages, gérer l'upload d'images et le retour des résultats.
+- **Stratégie de test:** Tester les endpoints avec différents types d'images, valider les réponses JSON, et tester la gestion des erreurs.
+- **Priorité:** Medium
+- **Dépendances:** 4.4
+
+### 4.6 - Optimiser la qualité de reconnaissance
+- **Description:** Améliorer la qualité de l'OCR avec des pré-traitements d'image
+- **Détails:** Implémenter des filtres de pré-traitement (contraste, bruit, rotation), configurer les paramètres Tesseract optimaux, et ajouter la validation des résultats.
+- **Stratégie de test:** Comparer la qualité de reconnaissance avant/après optimisation, tester sur des images de qualité variable.
+- **Priorité:** Low
+- **Dépendances:** 4.5
+
+### 4.7 - Créer les tests OCR
+- **Description:** Créer une suite de tests complète pour le service OCR
+- **Détails:** Créer des tests unitaires pour OcrService, des tests d'intégration pour les endpoints, et des tests avec des images de référence.
+- **Stratégie de test:** Exécuter tous les tests OCR, vérifier la couverture de code, et valider les performances.
+- **Priorité:** Medium
+- **Dépendances:** 4.6

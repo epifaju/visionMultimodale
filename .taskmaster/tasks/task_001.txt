@@ -1,0 +1,55 @@
+# Tâche 1: Initialisation du projet et structure
+
+**Description:** Adapter la structure existante et configurer l'environnement full-stack avec Spring Boot et React
+
+**Détails:** Réorganiser le projet Vite existant dans un dossier frontend/, créer la structure backend Spring Boot, configurer les fichiers de build, et mettre en place l'environnement de développement avec Docker Compose.
+
+**Stratégie de test:** Vérifier que la structure de dossiers est adaptée, que les fichiers de build sont valides, et que Docker Compose peut démarrer les services de base.
+
+**Priorité:** High
+**Statut:** Pending
+**Dépendances:** Aucune
+
+## Sous-tâches:
+
+### 1.1 - Réorganiser la structure frontend existante
+- **Description:** Réorganiser le projet Vite existant dans un dossier frontend/
+- **Détails:** Créer le dossier frontend/, déplacer tous les fichiers frontend existants (src/, package.json, vite.config.ts, etc.), créer les dossiers manquants : src/components, src/pages, src/services, src/utils, et configurer la structure pour l'application de vision par ordinateur.
+- **Stratégie de test:** Vérifier que tous les dossiers sont créés, que le projet frontend fonctionne depuis le dossier frontend/, et que la structure respecte les conventions Vite.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 1.2 - Créer la structure des dossiers backend Spring Boot
+- **Description:** Créer l'arborescence des dossiers pour le projet Spring Boot
+- **Détails:** Créer les dossiers : backend/src/main/java/com/vision/app, backend/src/main/resources, backend/src/test/java, backend/src/test/resources, et configurer la structure Maven standard.
+- **Stratégie de test:** Vérifier que tous les dossiers sont créés et que la structure respecte les conventions Maven.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 1.3 - Configurer le fichier pom.xml pour Spring Boot
+- **Description:** Créer et configurer le fichier Maven avec toutes les dépendances nécessaires
+- **Détails:** Créer backend/pom.xml avec Spring Boot 3.3+, Java 21, et ajouter les dépendances pour JPA, Security, Web, et les bibliothèques d'extraction (Tess4J, PDFBox, ZXing, PassportEye).
+- **Stratégie de test:** Vérifier que le projet backend compile sans erreurs et que toutes les dépendances sont résolues.
+- **Priorité:** High
+- **Dépendances:** 1.2
+
+### 1.4 - Adapter le fichier package.json existant pour React
+- **Description:** Adapter le package.json existant avec les dépendances nécessaires
+- **Détails:** Modifier frontend/package.json pour ajouter TailwindCSS, les dépendances pour la gestion d'état, les composants UI, et les utilitaires pour l'application de vision par ordinateur.
+- **Stratégie de test:** Vérifier que le projet s'installe sans erreurs et que toutes les dépendances sont résolues.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 1.5 - Créer le fichier docker-compose.yml
+- **Description:** Configurer l'environnement de développement avec Docker Compose
+- **Détails:** Créer le fichier docker-compose.yml avec les services : backend Spring Boot, frontend React (utilisant le projet Vite dans le dossier frontend/), base de données PostgreSQL, et Ollama LLM.
+- **Stratégie de test:** Vérifier que tous les services peuvent démarrer avec 'docker-compose up' et que les ports sont correctement exposés.
+- **Priorité:** High
+- **Dépendances:** 1.3, 1.4
+
+### 1.6 - Configurer les fichiers de configuration Spring Boot
+- **Description:** Créer les fichiers de configuration pour l'environnement de développement
+- **Détails:** Créer backend/src/main/resources/application.properties avec la configuration de base, les profils de développement, et les paramètres de base de données.
+- **Stratégie de test:** Vérifier que l'application Spring Boot peut démarrer et se connecter à la base de données.
+- **Priorité:** Medium
+- **Dépendances:** 1.5

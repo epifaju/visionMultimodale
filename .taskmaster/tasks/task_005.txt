@@ -1,0 +1,55 @@
+# Tâche 5: Service de lecture PDF avec Apache PDFBox
+
+**Description:** Implémenter l'extraction de texte depuis les fichiers PDF
+
+**Détails:** Intégrer Apache PDFBox, créer le service de traitement PDF, gérer différents formats de PDF, et optimiser l'extraction de texte.
+
+**Stratégie de test:** Tester l'extraction de texte sur différents types de PDF, valider la préservation du formatage, et tester la gestion des erreurs.
+
+**Priorité:** Medium
+**Statut:** Pending
+**Dépendances:** Tâche 3
+
+## Sous-tâches:
+
+### 5.1 - Ajouter les dépendances PDFBox dans pom.xml
+- **Description:** Intégrer Apache PDFBox et les dépendances nécessaires
+- **Détails:** Ajouter les dépendances PDFBox, configurer les versions compatibles, et vérifier que les bibliothèques sont disponibles.
+- **Stratégie de test:** Vérifier que le projet compile avec PDFBox et que les dépendances sont résolues.
+- **Priorité:** High
+- **Dépendances:** Aucune
+
+### 5.2 - Créer le service de traitement PDF
+- **Description:** Créer le service principal pour le traitement des fichiers PDF
+- **Détails:** Créer PdfService avec les méthodes de base, configurer PDFBox, et implémenter la gestion des erreurs et exceptions.
+- **Stratégie de test:** Vérifier que le service peut charger des PDF simples et gérer les erreurs de chargement.
+- **Priorité:** High
+- **Dépendances:** 5.1
+
+### 5.3 - Implémenter l'extraction de texte
+- **Description:** Implémenter l'extraction de texte depuis les documents PDF
+- **Détails:** Créer les méthodes d'extraction de texte, gérer les différents types de contenu (texte, images), et extraire les métadonnées du PDF.
+- **Stratégie de test:** Tester l'extraction sur des PDF avec du texte simple, valider la qualité de l'extraction, et vérifier les métadonnées.
+- **Priorité:** High
+- **Dépendances:** 5.2
+
+### 5.4 - Gérer différents formats de PDF
+- **Description:** Gérer les différents types de PDF et leurs spécificités
+- **Détails:** Gérer les PDF scannés, les PDF avec des formulaires, les PDF protégés, et implémenter la détection automatique du type de PDF.
+- **Stratégie de test:** Tester sur différents types de PDF, valider la détection automatique, et vérifier la gestion des cas spéciaux.
+- **Priorité:** Medium
+- **Dépendances:** 5.3
+
+### 5.5 - Créer les endpoints d'API PDF
+- **Description:** Créer les contrôleurs REST pour l'API de traitement PDF
+- **Détails:** Créer PdfController avec les endpoints POST /pdf/process et GET /pdf/metadata, gérer l'upload de fichiers PDF et le retour des résultats.
+- **Stratégie de test:** Tester les endpoints avec différents types de PDF, valider les réponses JSON, et tester la gestion des erreurs.
+- **Priorité:** Medium
+- **Dépendances:** 5.4
+
+### 5.6 - Créer les tests PDF
+- **Description:** Créer une suite de tests complète pour le service PDF
+- **Détails:** Créer des tests unitaires pour PdfService, des tests d'intégration pour les endpoints, et des tests avec des PDF de référence.
+- **Stratégie de test:** Exécuter tous les tests PDF, vérifier la couverture de code, et valider les performances sur différents types de fichiers.
+- **Priorité:** Medium
+- **Dépendances:** 5.5
