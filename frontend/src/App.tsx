@@ -3,13 +3,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import type { User, Document, ProcessingResult } from './types';
 import {
   NavigationBar,
-  LoginForm,
+  AuthPage,
   FileUpload,
   ResultsViewer,
   Dashboard,
   DocumentsPage,
   UploadPage,
 } from './components';
+import ProcessingPage from './pages/ProcessingPage';
 import { NotificationContainer, ErrorBoundary } from './components/ui';
 import { useAuthStore, useDocumentStore, useUIStore } from './stores';
 import { useAppInitialization } from './hooks';
@@ -245,11 +246,14 @@ const AppContent: React.FC = () => {
 function App() {
   const { isAuthenticated } = useAuthStore();
 
-  // Si l'utilisateur n'est pas connecté, afficher le formulaire de connexion
+  // Si l'utilisateur n'est pas connecté, afficher la page d'authentification
   if (!isAuthenticated) {
     return (
       <ErrorBoundary>
-        <LoginForm onLogin={async () => {}} />
+        <AuthPage 
+          onLogin={async () => {}}
+          onRegister={async () => {}}
+        />
       </ErrorBoundary>
     );
   }
@@ -282,6 +286,17 @@ function App() {
                 <NavigationBar user={mockUser} onLogout={() => {}} />
                 <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                   <UploadPage />
+                </main>
+                <NotificationContainer />
+              </div>
+            </ProtectedRoute>
+          } />
+          <Route path="/processing" element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-secondary-50">
+                <NavigationBar user={mockUser} onLogout={() => {}} />
+                <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                  <ProcessingPage />
                 </main>
                 <NotificationContainer />
               </div>

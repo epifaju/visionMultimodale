@@ -23,7 +23,7 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // Port exposé par Docker
+        target: 'http://localhost:8080', // Backend local
         changeOrigin: true,
         secure: false,
       },

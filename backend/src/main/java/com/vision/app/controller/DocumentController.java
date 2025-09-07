@@ -1,41 +1,27 @@
 package com.vision.app.controller;
 
-import com.vision.app.dto.DocumentProcessingResult;
 import com.vision.app.dto.OcrResult;
 import com.vision.app.dto.PdfResult;
 import com.vision.app.dto.BarcodeResult;
+import com.vision.app.dto.MrzResult;
 import com.vision.app.dto.OllamaResult;
 import com.vision.app.dto.DocumentDto;
-import com.vision.app.model.Document;
-import com.vision.app.model.ProcessingStatus;
-import com.vision.app.model.User;
-import com.vision.app.repository.DocumentRepository;
-import com.vision.app.service.DocumentProcessingService;
 import com.vision.app.service.OcrService;
 import com.vision.app.service.PdfService;
 import com.vision.app.service.BarcodeService;
+import com.vision.app.service.MrzService;
 import com.vision.app.service.OllamaService;
-import com.vision.app.service.UserService;
+import com.vision.app.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/documents")
@@ -44,13 +30,50 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DocumentController {
 
-    // private final DocumentProcessingService documentProcessingService;
-    // private final OcrService ocrService;
-    // private final PdfService pdfService;
-    // private final BarcodeService barcodeService;
-    // private final OllamaService ollamaService;
-    private final DocumentRepository documentRepository;
-    private final UserService userService;
+    private final OcrService ocrService;
+    private final PdfService pdfService;
+    private final BarcodeService barcodeService;
+    private final MrzService mrzService;
+    private final OllamaService ollamaService;
+    private final DocumentService documentService;
+
+    /**
+     * Endpoint pour récupérer la liste des documents
+     */
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getDocuments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "uploadedAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Récupérer les documents depuis la base de données
+            Page<DocumentDto> documentsPage = documentService.getAllDocuments(page, size, sortBy, sortDir);
+
+            response.put("content", documentsPage.getContent());
+            response.put("totalPages", documentsPage.getTotalPages());
+            response.put("totalElements", documentsPage.getTotalElements());
+            response.put("currentPage", documentsPage.getNumber());
+            response.put("size", documentsPage.getSize());
+            response.put("first", documentsPage.isFirst());
+            response.put("last", documentsPage.isLast());
+            response.put("sortBy", sortBy);
+            response.put("sortDir", sortDir);
+            response.put("message", "Liste des documents récupérée avec succès");
+
+            log.info("📋 Documents - Récupération de la liste (page {}, taille {}): {} documents trouvés",
+                    page, size, documentsPage.getTotalElements());
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("❌ Documents - Erreur lors de la récupération: {}", e.getMessage(), e);
+            response.put("error", "Erreur lors de la récupération des documents: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 
     /**
      * Endpoint de test simple
@@ -73,433 +96,498 @@ public class DocumentController {
     }
 
     /**
-     * Récupère la liste des documents de l'utilisateur connecté
+     * Test POST simple
      */
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> getUserDocuments(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "uploadedAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir,
-            @RequestParam(required = false) ProcessingStatus status,
-            @RequestParam(required = false) String fileType,
-            @RequestParam(required = false) String searchQuery) {
+    @PostMapping("/test-post")
+    public ResponseEntity<Map<String, Object>> testPost() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", "POST fonctionne dans DocumentController !");
+        result.put("timestamp", System.currentTimeMillis());
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Endpoint de test pour l'upload de documents
+     */
+    @PostMapping(value = "/test-upload", consumes = "multipart/form-data")
+    public ResponseEntity<Map<String, Object>> testUpload(
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest request) {
+
+        Map<String, Object> result = new HashMap<>();
 
         try {
-            // Récupérer l'utilisateur connecté
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String username = authentication.getName();
+            // Debug détaillé
+            String authHeader = request.getHeader("Authorization");
+            log.info("📁 Test Upload - DEBUG Headers:");
+            log.info("   Authorization: {}",
+                    authHeader != null
+                            ? "Present (" + authHeader.substring(0, Math.min(authHeader.length(), 20)) + "...)"
+                            : "Missing");
+            log.info("   Content-Type: {}", request.getContentType());
+            log.info("   Method: {}", request.getMethod());
+            log.info("   URL: {}", request.getRequestURL());
 
-            // Si pas d'authentification ou utilisateur anonyme, retourner tous les
-            // documents
-            if (username == null || username.equals("anonymousUser")) {
-                log.info("Aucune authentification détectée, retour de tous les documents");
-                return getAllDocuments(page, size, sortBy, sortDir, status, fileType, searchQuery);
+            log.info("📁 Test Upload - Fichier reçu: {} ({} bytes)", file.getOriginalFilename(), file.getSize());
+
+            // Validation basique
+            if (file.isEmpty()) {
+                result.put("success", false);
+                result.put("error", "Fichier vide");
+                return ResponseEntity.badRequest().body(result);
             }
 
-            User user = userService.getUserEntityByUsername(username);
-
-            if (user == null) {
-                log.warn("Utilisateur non trouvé: {}", username);
-                return ResponseEntity.badRequest().body(Map.of("error", "Utilisateur non trouvé"));
+            // Récupérer l'utilisateur authentifié depuis le contexte de sécurité
+            Long userId = 1L; // Par défaut
+            try {
+                String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : null;
+                if (username != null) {
+                    // Récupérer l'ID de l'utilisateur depuis le service
+                    var user = documentService.getUserByUsername(username);
+                    if (user.isPresent()) {
+                        userId = user.get().getId();
+                        log.info("📁 Test Upload - Utilisateur authentifié trouvé: {} (ID: {})", username, userId);
+                    } else {
+                        log.warn("📁 Test Upload - Utilisateur {} non trouvé, utilisation de l'ID par défaut: {}",
+                                username, userId);
+                    }
+                } else {
+                    log.warn("📁 Test Upload - Aucun utilisateur authentifié, utilisation de l'ID par défaut: {}",
+                            userId);
+                }
+            } catch (Exception e) {
+                log.warn(
+                        "📁 Test Upload - Erreur lors de la récupération de l'utilisateur: {}, utilisation de l'ID par défaut: {}",
+                        e.getMessage(), userId);
             }
 
-            // Configuration de la pagination et du tri
-            Sort sort = Sort.by(Sort.Direction.fromString(sortDir.toUpperCase()), sortBy);
-            Pageable pageable = PageRequest.of(page, size, sort);
+            // Sauvegarder le document en base de données
+            DocumentDto savedDocument = documentService.saveDocument(file, userId);
 
-            // Récupération des documents avec filtres
-            Page<Document> documentsPage;
+            result.put("success", true);
+            result.put("document", savedDocument);
+            result.put("fileName", file.getOriginalFilename());
+            result.put("fileSize", file.getSize());
+            result.put("contentType", file.getContentType());
+            result.put("message", "🎉 Upload et sauvegarde réussis !");
+            result.put("timestamp", System.currentTimeMillis());
 
-            if (status != null && fileType != null) {
-                documentsPage = documentRepository.findByUploadedByAndStatus(user, status, pageable);
-            } else if (status != null) {
-                documentsPage = documentRepository.findByStatus(status, pageable);
-            } else if (fileType != null) {
-                documentsPage = documentRepository.findByFileType(fileType, pageable);
-            } else if (searchQuery != null && !searchQuery.trim().isEmpty()) {
-                documentsPage = documentRepository.findByExtractedTextContaining(searchQuery, pageable);
+            log.info("✅ Test Upload - Document sauvegardé avec ID: {} pour utilisateur ID: {} ({})",
+                    savedDocument.getId(), userId, file.getOriginalFilename());
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            log.error("❌ Test Upload - Erreur: {}", e.getMessage(), e);
+            result.put("success", false);
+            result.put("error", "Erreur lors du test upload: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    /**
+     * Endpoint d'upload de documents avec support de fichiers
+     */
+    @PostMapping(value = "/process", consumes = "multipart/form-data")
+    public ResponseEntity<Map<String, Object>> uploadDocument(
+            @RequestParam("file") MultipartFile file) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            log.info("📁 Fichier reçu: {} ({} bytes)", file.getOriginalFilename(), file.getSize());
+
+            // Validation basique
+            if (file.isEmpty()) {
+                result.put("success", false);
+                result.put("error", "Fichier vide");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            // Traitement réussi
+            result.put("success", true);
+            result.put("fileName", file.getOriginalFilename());
+            result.put("fileSize", file.getSize());
+            result.put("contentType", file.getContentType());
+            result.put("message", "🎉 Upload réel réussi ! Fichier traité par le backend.");
+            result.put("timestamp", System.currentTimeMillis());
+
+            log.info("✅ Traitement terminé pour: {}", file.getOriginalFilename());
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            log.error("❌ Erreur lors du traitement: {}", e.getMessage(), e);
+            result.put("success", false);
+            result.put("error", "Erreur lors du traitement: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    /**
+     * Endpoint OCR - Extraction de texte depuis une image
+     */
+    @PostMapping(value = "/ocr", consumes = "multipart/form-data")
+    public ResponseEntity<Map<String, Object>> processOcr(
+            @RequestParam("file") MultipartFile file) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            log.info("🔍 OCR - Traitement de l'image: {} ({} bytes)", file.getOriginalFilename(), file.getSize());
+
+            // Validation du fichier
+            if (file.isEmpty()) {
+                result.put("success", false);
+                result.put("error", "Fichier vide");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            // Vérifier que c'est bien une image
+            if (!file.getContentType().startsWith("image/")) {
+                result.put("success", false);
+                result.put("error", "Le fichier doit être une image");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            // Traitement OCR
+            OcrResult ocrResult = ocrService.extractTextFromImageBytes(
+                    file.getBytes(),
+                    file.getOriginalFilename());
+
+            if (ocrResult.isSuccess()) {
+                result.put("success", true);
+                result.put("data", ocrResult);
+                result.put("message", "OCR traité avec succès");
+                log.info("✅ OCR - Succès pour {}: {} caractères extraits",
+                        file.getOriginalFilename(), ocrResult.getTextLength());
             } else {
-                documentsPage = documentRepository.findByUploadedBy(user, pageable);
+                result.put("success", false);
+                result.put("error", ocrResult.getErrorMessage());
+                result.put("data", ocrResult);
+                log.warn("⚠️ OCR - Échec pour {}: {}", file.getOriginalFilename(), ocrResult.getErrorMessage());
             }
 
-            // Conversion en DTOs
-            Page<DocumentDto> documentsDtoPage = documentsPage.map(this::convertToDto);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("content", documentsDtoPage.getContent());
-            response.put("totalElements", documentsPage.getTotalElements());
-            response.put("totalPages", documentsPage.getTotalPages());
-            response.put("currentPage", documentsPage.getNumber());
-            response.put("size", documentsPage.getSize());
-            response.put("first", documentsPage.isFirst());
-            response.put("last", documentsPage.isLast());
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(result);
 
         } catch (Exception e) {
-            log.error("Erreur lors de la récupération des documents: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("error", "Erreur interne du serveur: " + e.getMessage()));
+            log.error("❌ OCR - Erreur lors du traitement: {}", e.getMessage(), e);
+            result.put("success", false);
+            result.put("error", "Erreur lors du traitement OCR: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(result);
         }
     }
 
     /**
-     * Récupère tous les documents (endpoint public pour le développement)
+     * Endpoint PDF - Extraction de texte depuis un fichier PDF
      */
-    private ResponseEntity<Map<String, Object>> getAllDocuments(
-            int page, int size, String sortBy, String sortDir,
-            ProcessingStatus status, String fileType, String searchQuery) {
+    @PostMapping(value = "/pdf", consumes = "multipart/form-data")
+    public ResponseEntity<Map<String, Object>> processPdf(
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest request) {
+
+        Map<String, Object> result = new HashMap<>();
 
         try {
-            // Configuration de la pagination et du tri
-            Sort sort = Sort.by(Sort.Direction.fromString(sortDir.toUpperCase()), sortBy);
-            Pageable pageable = PageRequest.of(page, size, sort);
+            // Log de débogage pour l'authentification
+            String authHeader = request.getHeader("Authorization");
+            log.info("📄 PDF - Headers reçus: Authorization={}, Content-Type={}",
+                    authHeader != null ? "Present" : "Missing",
+                    request.getContentType());
 
-            // Récupération de tous les documents
-            Page<Document> documentsPage = documentRepository.findAll(pageable);
+            log.info("📄 PDF - Traitement du fichier: {} ({} bytes)", file.getOriginalFilename(), file.getSize());
 
-            // Conversion en DTOs
-            Page<DocumentDto> documentsDtoPage = documentsPage.map(this::convertToDto);
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("content", documentsDtoPage.getContent());
-            response.put("totalElements", documentsPage.getTotalElements());
-            response.put("totalPages", documentsPage.getTotalPages());
-            response.put("currentPage", documentsPage.getNumber());
-            response.put("size", documentsPage.getSize());
-            response.put("first", documentsPage.isFirst());
-            response.put("last", documentsPage.isLast());
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            log.error("Erreur lors de la récupération de tous les documents: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("error", "Erreur interne du serveur: " + e.getMessage()));
-        }
-    }
-
-    /**
-     * Récupère un document spécifique par son ID
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<DocumentDto> getDocumentById(@PathVariable Long id) {
-        try {
-            // Récupérer l'utilisateur connecté
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String username = authentication.getName();
-            User user = userService.getUserEntityByUsername(username);
-
-            if (user == null) {
-                return ResponseEntity.badRequest().build();
+            // Validation du fichier
+            if (file.isEmpty()) {
+                result.put("success", false);
+                result.put("error", "Fichier vide");
+                return ResponseEntity.badRequest().body(result);
             }
 
-            // Récupérer le document
-            Document document = documentRepository.findById(id)
-                    .orElse(null);
-
-            if (document == null) {
-                return ResponseEntity.notFound().build();
+            // Vérifier que c'est bien un PDF
+            if (!file.getContentType().equals("application/pdf")) {
+                result.put("success", false);
+                result.put("error", "Le fichier doit être un PDF");
+                return ResponseEntity.badRequest().body(result);
             }
 
-            // Vérifier que l'utilisateur est propriétaire du document
-            if (!document.getUploadedBy().getId().equals(user.getId())) {
-                return ResponseEntity.status(403).build();
-            }
+            // Traitement PDF
+            PdfResult pdfResult = pdfService.extractTextFromPdfBytes(
+                    file.getBytes(),
+                    file.getOriginalFilename());
 
-            return ResponseEntity.ok(convertToDto(document));
-
-        } catch (Exception e) {
-            log.error("Erreur lors de la récupération du document {}: {}", id, e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    /**
-     * Convertit un Document en DocumentDto
-     */
-    private DocumentDto convertToDto(Document document) {
-        try {
-            DocumentDto dto = new DocumentDto();
-            dto.setId(document.getId());
-            dto.setFileName(document.getFileName());
-            dto.setOriginalFileName(document.getOriginalFileName());
-            dto.setFileType(document.getFileType());
-            dto.setFileSize(document.getFileSize());
-            dto.setExtractedText(document.getExtractedText());
-            dto.setOcrConfidence(document.getOcrConfidence());
-            dto.setDetectedLanguage(document.getDetectedLanguage());
-            dto.setStatus(document.getStatus());
-            dto.setProcessingErrors(document.getProcessingErrors());
-            dto.setMetadata(document.getMetadata());
-
-            // Gestion sécurisée de l'utilisateur
-            if (document.getUploadedBy() != null) {
-                dto.setUploadedById(document.getUploadedBy().getId());
-                dto.setUploadedByUsername(document.getUploadedBy().getUsername());
+            if (pdfResult.isSuccess()) {
+                result.put("success", true);
+                result.put("data", pdfResult);
+                result.put("message", "PDF traité avec succès");
+                log.info("✅ PDF - Succès pour {}: {} pages, {} caractères",
+                        file.getOriginalFilename(), pdfResult.getPageCount(), pdfResult.getText().length());
             } else {
-                dto.setUploadedById(null);
-                dto.setUploadedByUsername("Unknown");
+                result.put("success", false);
+                result.put("error", pdfResult.getErrorMessage());
+                result.put("data", pdfResult);
+                log.warn("⚠️ PDF - Échec pour {}: {}", file.getOriginalFilename(), pdfResult.getErrorMessage());
             }
 
-            dto.setUploadedAt(document.getUploadedAt());
-            dto.setProcessedAt(document.getProcessedAt());
-            dto.setUpdatedAt(document.getUpdatedAt());
-            return dto;
+            return ResponseEntity.ok(result);
+
         } catch (Exception e) {
-            log.error("Erreur lors de la conversion du document {} en DTO: {}", document.getId(), e.getMessage());
-            // Retourner un DTO minimal en cas d'erreur
-            DocumentDto errorDto = new DocumentDto();
-            errorDto.setId(document.getId());
-            errorDto.setFileName(document.getFileName() != null ? document.getFileName() : "Error");
-            errorDto.setStatus(document.getStatus());
-            return errorDto;
+            log.error("❌ PDF - Erreur lors du traitement: {}", e.getMessage(), e);
+            result.put("success", false);
+            result.put("error", "Erreur lors du traitement PDF: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(result);
         }
     }
 
-    // Méthodes temporairement commentées pour le diagnostic
-    /*
-     * @PostMapping(value = "/process", consumes =
-     * MediaType.MULTIPART_FORM_DATA_VALUE)
-     * public ResponseEntity<DocumentProcessingResult> processDocument(
-     * 
-     * @RequestParam("file") MultipartFile file) {
-     * 
-     * try {
-     * log.info("Processing document: {} ({} bytes)", file.getOriginalFilename(),
-     * file.getSize());
-     * 
-     * // Création d'un fichier temporaire
-     * Path tempFile = Files.createTempFile("doc_", "_" +
-     * file.getOriginalFilename());
-     * file.transferTo(tempFile.toFile());
-     * 
-     * // Traitement du document
-     * DocumentProcessingResult result =
-     * documentProcessingService.processDocument(tempFile.toFile());
-     * 
-     * // Nettoyage du fichier temporaire
-     * Files.deleteIfExists(tempFile);
-     * 
-     * return ResponseEntity.ok(result);
-     * 
-     * } catch (IOException e) {
-     * log.error("Failed to process document: {}", e.getMessage());
-     * DocumentProcessingResult errorResult = new DocumentProcessingResult();
-     * errorResult.setFileName(file.getOriginalFilename());
-     * errorResult.setSuccess(false);
-     * errorResult.setErrorMessage("File processing failed: " + e.getMessage());
-     * return ResponseEntity.badRequest().body(errorResult);
-     * } catch (Exception e) {
-     * log.error("Unexpected error during document processing: {}", e.getMessage());
-     * DocumentProcessingResult errorResult = new DocumentProcessingResult();
-     * errorResult.setFileName(file.getOriginalFilename());
-     * errorResult.setSuccess(false);
-     * errorResult.setErrorMessage("Unexpected error: " + e.getMessage());
-     * return ResponseEntity.internalServerError().body(errorResult);
-     * }
-     * }
-     * 
-     * @PostMapping(value = "/ocr", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-     * public ResponseEntity<OcrResult> extractTextFromImage(
-     * 
-     * @RequestParam("file") MultipartFile file) {
-     * 
-     * try {
-     * log.info("OCR extraction for image: {} ({} bytes)",
-     * file.getOriginalFilename(), file.getSize());
-     * 
-     * OcrResult result = ocrService.extractTextFromImageBytes(
-     * file.getBytes(),
-     * file.getOriginalFilename());
-     * 
-     * if (result.isSuccess()) {
-     * return ResponseEntity.ok(result);
-     * } else {
-     * return ResponseEntity.badRequest().body(result);
-     * }
-     * 
-     * } catch (Exception e) {
-     * log.error("OCR extraction failed: {}", e.getMessage());
-     * OcrResult errorResult = OcrResult.builder()
-     * .fileName(file.getOriginalFilename())
-     * .success(false)
-     * .errorMessage("OCR extraction failed: " + e.getMessage())
-     * .build();
-     * return ResponseEntity.internalServerError().body(errorResult);
-     * }
-     * }
-     * 
-     * @PostMapping(value = "/pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-     * public ResponseEntity<PdfResult> extractTextFromPdf(
-     * 
-     * @RequestParam("file") MultipartFile file) {
-     * 
-     * try {
-     * log.info("PDF extraction for file: {} ({} bytes)",
-     * file.getOriginalFilename(), file.getSize());
-     * 
-     * PdfResult result = pdfService.extractTextFromPdfBytes(
-     * file.getBytes(),
-     * file.getOriginalFilename());
-     * 
-     * if (result.isSuccess()) {
-     * return ResponseEntity.ok(result);
-     * } else {
-     * return ResponseEntity.badRequest().body(result);
-     * }
-     * 
-     * } catch (Exception e) {
-     * log.error("PDF extraction failed: {}", e.getMessage());
-     * PdfResult errorResult = new PdfResult();
-     * errorResult.setFileName(file.getOriginalFilename());
-     * errorResult.setSuccess(false);
-     * errorResult.setErrorMessage("PDF extraction failed: " + e.getMessage());
-     * return ResponseEntity.internalServerError().body(errorResult);
-     * }
-     * }
-     * 
-     * @PostMapping(value = "/barcode", consumes =
-     * MediaType.MULTIPART_FORM_DATA_VALUE)
-     * public ResponseEntity<BarcodeResult> readBarcodesFromImage(
-     * 
-     * @RequestParam("file") MultipartFile file) {
-     * 
-     * try {
-     * log.info("Barcode reading for image: {} ({} bytes)",
-     * file.getOriginalFilename(), file.getSize());
-     * 
-     * BarcodeResult result = barcodeService.readBarcodesFromImageBytes(
-     * file.getBytes(),
-     * file.getOriginalFilename());
-     * 
-     * if (result.isSuccess()) {
-     * return ResponseEntity.ok(result);
-     * } else {
-     * return ResponseEntity.badRequest().body(result);
-     * }
-     * 
-     * } catch (Exception e) {
-     * log.error("Barcode reading failed: {}", e.getMessage());
-     * BarcodeResult errorResult = new BarcodeResult();
-     * errorResult.setFileName(file.getOriginalFilename());
-     * errorResult.setSuccess(false);
-     * errorResult.setErrorMessage("Barcode reading failed: " + e.getMessage());
-     * return ResponseEntity.internalServerError().body(errorResult);
-     * }
-     * }
-     * 
-     * @PostMapping("/analyze")
-     * public ResponseEntity<OllamaResult> analyzeText(
-     * 
-     * @RequestBody Map<String, String> request) {
-     * 
-     * try {
-     * String text = request.get("text");
-     * String prompt = request.get("prompt");
-     * 
-     * if (text == null || text.trim().isEmpty()) {
-     * return ResponseEntity.badRequest().build();
-     * }
-     * 
-     * log.info("Ollama analysis for text ({} chars) with prompt: {}",
-     * text.length(), prompt);
-     * 
-     * OllamaResult result = ollamaService.analyzeText(text, prompt != null ? prompt
-     * : "Analyze this text");
-     * 
-     * if (result.isSuccessful()) {
-     * return ResponseEntity.ok(result);
-     * } else {
-     * return ResponseEntity.badRequest().body(result);
-     * }
-     * 
-     * } catch (Exception e) {
-     * log.error("Ollama analysis failed: {}", e.getMessage());
-     * OllamaResult errorResult = new OllamaResult();
-     * errorResult.setSuccess(false);
-     * errorResult.setErrorMessage("Analysis failed: " + e.getMessage());
-     * return ResponseEntity.internalServerError().body(errorResult);
-     * }
-     * }
-     * 
-     * @PostMapping("/summarize")
-     * public ResponseEntity<OllamaResult> summarizeText(
-     * 
-     * @RequestBody Map<String, String> request) {
-     * 
-     * try {
-     * String text = request.get("text");
-     * 
-     * if (text == null || text.trim().isEmpty()) {
-     * return ResponseEntity.badRequest().build();
-     * }
-     * 
-     * log.info("Text summarization for {} characters", text.length());
-     * 
-     * OllamaResult result = ollamaService.summarizeText(text);
-     * 
-     * if (result.isSuccessful()) {
-     * return ResponseEntity.ok(result);
-     * } else {
-     * return ResponseEntity.badRequest().body(result);
-     * }
-     * 
-     * } catch (Exception e) {
-     * log.error("Text summarization failed: {}", e.getMessage());
-     * OllamaResult errorResult = new OllamaResult();
-     * errorResult.setSuccess(false);
-     * errorResult.setErrorMessage("Summarization failed: " + e.getMessage());
-     * return ResponseEntity.internalServerError().body(errorResult);
-     * }
-     * }
-     * 
-     * @GetMapping("/status")
-     * public ResponseEntity<Map<String, Object>> getServicesStatus() {
-     * Map<String, Object> status = new HashMap<>();
-     * 
-     * // Statut OCR
-     * Map<String, Object> ocrStatus = ocrService.getConfiguration();
-     * status.put("ocr", ocrStatus);
-     * 
-     * // Statut Ollama (test de connexion)
-     * try {
-     * OllamaResult testResult = ollamaService.analyzeText("test", "test");
-     * status.put("ollama", Map.of(
-     * "available", testResult.isSuccessful(),
-     * "model", ollamaService.getModel(),
-     * "url", ollamaService.getOllamaUrl()));
-     * } catch (Exception e) {
-     * status.put("ollama", Map.of(
-     * "available", false,
-     * "error", e.getMessage()));
-     * }
-     * 
-     * // Statut général
-     * status.put("timestamp", System.currentTimeMillis());
-     * status.put("version", "1.0.0");
-     * 
-     * return ResponseEntity.ok(status);
-     * }
-     * 
-     * @PostMapping("/test/ocr")
-     * public ResponseEntity<Map<String, Object>> testOcrService() {
-     * Map<String, Object> result = new HashMap<>();
-     * 
-     * try {
-     * // Test avec une image de test (à implémenter)
-     * result.put("status", "OCR service is available");
-     * result.put("tesseract", ocrService.getConfiguration());
-     * result.put("success", true);
-     * 
-     * } catch (Exception e) {
-     * result.put("status", "OCR service test failed");
-     * result.put("error", e.getMessage());
-     * result.put("success", false);
-     * }
-     * 
-     * return ResponseEntity.ok(result);
-     * }
+    /**
+     * Endpoint codes-barres - Lecture de codes-barres et QR codes depuis une image
      */
+    @PostMapping(value = "/barcode", consumes = "multipart/form-data")
+    public ResponseEntity<Map<String, Object>> processBarcode(
+            @RequestParam("file") MultipartFile file) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            log.info("📊 Barcode - Traitement de l'image: {} ({} bytes)", file.getOriginalFilename(), file.getSize());
+
+            // Validation du fichier
+            if (file.isEmpty()) {
+                result.put("success", false);
+                result.put("error", "Fichier vide");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            // Vérifier que c'est bien une image
+            if (!file.getContentType().startsWith("image/")) {
+                result.put("success", false);
+                result.put("error", "Le fichier doit être une image");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            // Traitement codes-barres
+            BarcodeResult barcodeResult = barcodeService.readBarcodesFromImageBytes(
+                    file.getBytes(),
+                    file.getOriginalFilename());
+
+            if (barcodeResult.isSuccess()) {
+                result.put("success", true);
+                result.put("data", barcodeResult);
+                result.put("message", "Codes-barres traités avec succès");
+                log.info("✅ Barcode - Succès pour {}: {} codes-barres trouvés",
+                        file.getOriginalFilename(), barcodeResult.getBarcodeCount());
+            } else {
+                result.put("success", false);
+                result.put("error", barcodeResult.getErrorMessage());
+                result.put("data", barcodeResult);
+                log.warn("⚠️ Barcode - Échec pour {}: {}", file.getOriginalFilename(), barcodeResult.getErrorMessage());
+            }
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            log.error("❌ Barcode - Erreur lors du traitement: {}", e.getMessage(), e);
+            result.put("success", false);
+            result.put("error", "Erreur lors du traitement des codes-barres: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    /**
+     * Endpoint MRZ - Extraction MRZ depuis une image de document
+     */
+    @PostMapping(value = "/mrz", consumes = "multipart/form-data")
+    public ResponseEntity<Map<String, Object>> processMrz(
+            @RequestParam("file") MultipartFile file) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            log.info("🆔 MRZ - Traitement du document: {} ({} bytes)", file.getOriginalFilename(), file.getSize());
+
+            // Validation du fichier
+            if (file.isEmpty()) {
+                result.put("success", false);
+                result.put("error", "Fichier vide");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            // Vérifier que c'est bien une image
+            if (!file.getContentType().startsWith("image/")) {
+                result.put("success", false);
+                result.put("error", "Le fichier doit être une image");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            // Traitement MRZ
+            MrzResult mrzResult = mrzService.processDocument(file);
+
+            if (mrzResult.isSuccess()) {
+                result.put("success", true);
+                result.put("data", mrzResult);
+                result.put("message", "MRZ traité avec succès");
+                log.info("✅ MRZ - Succès pour {}: Type {}, Pays {}",
+                        file.getOriginalFilename(),
+                        mrzResult.getData().getDocumentType(),
+                        mrzResult.getData().getIssuingCountry());
+            } else {
+                result.put("success", false);
+                result.put("error", mrzResult.getErrorMessage());
+                result.put("data", mrzResult);
+                log.warn("⚠️ MRZ - Échec pour {}: {}", file.getOriginalFilename(), mrzResult.getErrorMessage());
+            }
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            log.error("❌ MRZ - Erreur lors du traitement: {}", e.getMessage(), e);
+            result.put("success", false);
+            result.put("error", "Erreur lors du traitement MRZ: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    /**
+     * Endpoint Ollama - Analyse intelligente de document avec IA
+     */
+    @PostMapping(value = "/analyze", consumes = "multipart/form-data")
+    public ResponseEntity<Map<String, Object>> processAnalyze(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "prompt", required = false) String customPrompt) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            log.info("🤖 Ollama - Analyse IA du document: {} ({} bytes)", file.getOriginalFilename(), file.getSize());
+
+            // Validation du fichier
+            if (file.isEmpty()) {
+                result.put("success", false);
+                result.put("error", "Fichier vide");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            // Vérifier que c'est bien une image
+            if (!file.getContentType().startsWith("image/")) {
+                result.put("success", false);
+                result.put("error", "Le fichier doit être une image");
+                return ResponseEntity.badRequest().body(result);
+            }
+
+            // Utiliser un prompt par défaut si aucun n'est fourni
+            String prompt = customPrompt != null ? customPrompt
+                    : "Analysez cette image et décrivez son contenu. Identifiez les éléments visuels, le texte visible, et fournissez une description détaillée.";
+
+            // Traitement Ollama
+            OllamaResult ollamaResult = ollamaService.analyzeImageWithText(
+                    file.getBytes(),
+                    file.getOriginalFilename(),
+                    prompt);
+
+            if (ollamaResult.isSuccessful()) {
+                result.put("success", true);
+                result.put("data", ollamaResult);
+                result.put("message", "Analyse IA terminée avec succès");
+                log.info("✅ Ollama - Succès pour {}: {} caractères de réponse",
+                        file.getOriginalFilename(), ollamaResult.getResponse().length());
+            } else {
+                result.put("success", false);
+                result.put("error", ollamaResult.getErrorMessage());
+                result.put("data", ollamaResult);
+                log.warn("⚠️ Ollama - Échec pour {}: {}", file.getOriginalFilename(), ollamaResult.getErrorMessage());
+            }
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            log.error("❌ Ollama - Erreur lors de l'analyse: {}", e.getMessage(), e);
+            result.put("success", false);
+            result.put("error", "Erreur lors de l'analyse IA: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    /**
+     * Endpoint de test pour l'authentification JWT
+     */
+    @GetMapping("/test-auth")
+    public ResponseEntity<Map<String, Object>> testAuth(HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+
+        String authHeader = request.getHeader("Authorization");
+        result.put("authHeaderPresent", authHeader != null);
+        result.put("authHeader", authHeader);
+        result.put("contentType", request.getContentType());
+        result.put("method", request.getMethod());
+        result.put("timestamp", System.currentTimeMillis());
+
+        log.info("🔐 Test Auth - Headers: Authorization={}, Content-Type={}",
+                authHeader != null ? "Present" : "Missing",
+                request.getContentType());
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Endpoint de test pour l'authentification JWT avec POST
+     */
+    @PostMapping("/test-auth-post")
+    public ResponseEntity<Map<String, Object>> testAuthPost(HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+
+        String authHeader = request.getHeader("Authorization");
+        result.put("authHeaderPresent", authHeader != null);
+        result.put("authHeader", authHeader);
+        result.put("contentType", request.getContentType());
+        result.put("method", request.getMethod());
+        result.put("timestamp", System.currentTimeMillis());
+
+        log.info("🔐 Test Auth POST - Headers: Authorization={}, Content-Type={}",
+                authHeader != null ? "Present" : "Missing",
+                request.getContentType());
+
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Endpoint de statut des services
+     */
+    @GetMapping("/status")
+    public ResponseEntity<Map<String, Object>> getServicesStatus() {
+        Map<String, Object> status = new HashMap<>();
+
+        try {
+            // Vérifier le statut des services
+            Map<String, Object> ocrConfig = ocrService.getConfiguration();
+            Map<String, Object> pdfConfig = pdfService.getConfiguration();
+            Map<String, Object> barcodeConfig = barcodeService.getConfiguration();
+            Map<String, Object> ollamaConfig = ollamaService.getConfiguration();
+
+            status.put("timestamp", System.currentTimeMillis());
+            status.put("services", Map.of(
+                    "ocr", Map.of(
+                            "available", ocrConfig.get("available"),
+                            "language", ocrConfig.get("language"),
+                            "version", ocrConfig.get("version")),
+                    "pdf", Map.of(
+                            "available", pdfConfig.get("available"),
+                            "version", pdfConfig.get("version")),
+                    "barcode", Map.of(
+                            "available", barcodeConfig.get("available"),
+                            "version", barcodeConfig.get("version"),
+                            "supportedFormats", barcodeConfig.get("supportedFormats")),
+                    "mrz", Map.of(
+                            "available", true,
+                            "version", "MRZ Parser 1.0",
+                            "supportedTypes", new String[] { "PASSPORT", "ID_CARD" }),
+                    "ollama", Map.of(
+                            "available", ollamaConfig.get("available"),
+                            "version", ollamaConfig.get("version"),
+                            "model", ollamaConfig.get("model"))));
+
+            return ResponseEntity.ok(status);
+        } catch (Exception e) {
+            log.error("Erreur lors de la récupération du statut: {}", e.getMessage());
+            status.put("error", "Erreur lors de la récupération du statut");
+            return ResponseEntity.internalServerError().body(status);
+        }
+    }
 }

@@ -1,33 +1,96 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Document } from '../types';
 import { Button, Card } from './ui';
+import { useDocumentStore } from '../stores';
 
 interface DashboardProps {
-  documents: Document[];
   onDocumentSelect?: (document: Document) => void;
   onUploadClick?: () => void;
 }
 
-interface DashboardStats {
-  totalDocuments: number;
-  completedDocuments: number;
-  processingDocuments: number;
-  errorDocuments: number;
-  totalFileSize: number;
-  averageProcessingTime: number;
-}
-
 const Dashboard: React.FC<DashboardProps> = ({
-  documents,
   onDocumentSelect,
   onUploadClick,
 }) => {
+  const { documents, loadDocuments, isLoading, error } = useDocumentStore();
+  
+  // Charger les documents au montage
+  useEffect(() => {
+    loadDocuments();
+  }, [loadDocuments]);
+
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [dateFilter, setDateFilter] = useState<string>('7d');
 
+  // Afficher un indicateur de chargement si les documents sont en cours de chargement
+  if (isLoading && documents.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <span className="ml-3 text-secondary-600">Chargement des documents...</span>
+      </div>
+    );
+  }
+
+  // Afficher un message d'erreur s'il y en a une
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-secondary-900">Dashboard</h1>
+            <p className="text-secondary-600 mt-1">
+              Vue d'ensemble de vos documents et traitements
+            </p>
+          </div>
+        </div>
+        
+        <Card className="border-error-200 bg-error-50">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 text-error-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <div className="flex-1">
+              <h3 className="text-error-800 font-medium">Erreur lors du chargement des documents</h3>
+              <p className="text-error-700 text-sm mt-1">{error}</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => loadDocuments()}
+              className="ml-4"
+            >
+              Réessayer
+            </Button>
+          </div>
+        </Card>
+        
+        {/* Afficher des données de démonstration en cas d'erreur */}
+        <Card>
+          <div className="text-center py-8">
+            <svg className="mx-auto h-12 w-12 text-secondary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-secondary-900">Mode démonstration</h3>
+            <p className="mt-1 text-sm text-secondary-500">
+              En raison d'une erreur de connexion, le dashboard affiche des données de démonstration.
+            </p>
+            {onUploadClick && (
+              <div className="mt-4">
+                <Button variant="primary" onClick={onUploadClick}>
+                  Tester l'upload
+                </Button>
+              </div>
+            )}
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   // Calculer les statistiques
-  const stats: DashboardStats = documents.reduce(
+  const stats = documents.reduce(
     (acc, doc) => {
       acc.totalDocuments++;
       acc.totalFileSize += doc.fileSize;
@@ -53,7 +116,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       errorDocuments: 0,
       totalFileSize: 0,
       averageProcessingTime: 0,
-    } as DashboardStats
+    }
   );
 
   // Filtrer les documents

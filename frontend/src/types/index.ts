@@ -23,6 +23,14 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface RegisterCredentials {
+  username: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+
 export interface AuthResponse {
   token: string;
   user: User;
@@ -164,4 +172,140 @@ export interface DocumentFilters {
   dateFrom?: string | null;
   dateTo?: string | null;
   searchQuery?: string;
+}
+
+// Types pour les services de traitement de documents
+export interface OcrResult {
+  success: boolean;
+  text: string;
+  confidence: number;
+  language: string;
+  textLength: number;
+  processingTime: number;
+  errorMessage?: string;
+}
+
+export interface PdfResult {
+  success: boolean;
+  fileName: string;
+  fileSize: number;
+  pageCount: number;
+  text: string;
+  detectedLanguage: string;
+  hasText: boolean;
+  hasImages: boolean;
+  metadata: Record<string, any>;
+  pages: PageInfo[];
+  errorMessage?: string;
+}
+
+export interface PageInfo {
+  pageNumber: number;
+  width: number;
+  height: number;
+  rotation: number;
+  textLength: number;
+  hasText: boolean;
+}
+
+export interface BarcodeResult {
+  success: boolean;
+  fileName: string;
+  fileSize: number;
+  imageWidth: number;
+  imageHeight: number;
+  barcodeCount: number;
+  barcodes: BarcodeInfo[];
+  typeCounts: Record<string, number>;
+  errorMessage?: string;
+}
+
+export interface BarcodeInfo {
+  text: string;
+  format: string;
+  confidence: number;
+  topLeftX?: number;
+  topLeftY?: number;
+}
+
+export interface MrzResult {
+  success: boolean;
+  fileName: string;
+  mrzText: string;
+  data: MrzData;
+  errorMessage?: string;
+}
+
+export interface MrzData {
+  documentType: 'PASSPORT' | 'ID_CARD' | 'UNKNOWN';
+  issuingCountry: string;
+  surname: string;
+  givenNames: string;
+  documentNumber: string;
+  nationality: string;
+  dateOfBirth: string;
+  gender: 'MALE' | 'FEMALE' | 'UNSPECIFIED';
+  expiryDate: string;
+  personalNumber: string;
+}
+
+export interface OllamaResult {
+  success: boolean;
+  model: string;
+  prompt: string;
+  response: string;
+  done: boolean;
+  errorMessage?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface ServicesStatus {
+  timestamp: number;
+  services: {
+    ocr: {
+      available: boolean;
+      language: string;
+      version: string;
+    };
+    pdf: {
+      available: boolean;
+      version: string;
+    };
+    barcode: {
+      available: boolean;
+      version: string;
+      supportedFormats: string[];
+    };
+    mrz: {
+      available: boolean;
+      version: string;
+      supportedTypes: string[];
+    };
+    ollama: {
+      available: boolean;
+      version: string;
+      model: string;
+    };
+  };
+}
+
+// Types pour les composants de traitement
+export interface ProcessingStep {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  status: 'pending' | 'processing' | 'completed' | 'error';
+  result?: any;
+  error?: string;
+}
+
+export interface ProcessingOptions {
+  enableOcr: boolean;
+  enablePdf: boolean;
+  enableBarcode: boolean;
+  enableMrz: boolean;
+  enableOllama: boolean;
+  customPrompt?: string;
+  targetLanguage?: string;
 }

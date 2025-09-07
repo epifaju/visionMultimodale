@@ -16,6 +16,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({ user, onLogout }) => {
     { name: 'Dashboard', href: '/dashboard', current: location.pathname === '/dashboard' },
     { name: 'Documents', href: '/documents', current: location.pathname === '/documents' },
     { name: 'Upload', href: '/upload', current: location.pathname === '/upload' },
+    { name: 'Traitement', href: '/processing', current: location.pathname === '/processing' },
   ];
 
   const isActive = (href: string) => {

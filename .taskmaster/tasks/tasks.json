@@ -9,67 +9,76 @@
         "testStrategy": "Vérifier que la structure de dossiers est créée, que les fichiers de build sont valides, et que Docker Compose peut démarrer les services de base.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 1.1,
+            "id": 1,
             "title": "Créer la structure des dossiers backend",
             "description": "Créer l'arborescence des dossiers pour le projet Spring Boot",
             "details": "Créer les dossiers : src/main/java/com/vision/app, src/main/resources, src/test/java, src/test/resources, et configurer la structure Maven standard.",
             "testStrategy": "Vérifier que tous les dossiers sont créés et que la structure respecte les conventions Maven.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 1.2,
+            "id": 1,
             "title": "Créer la structure des dossiers frontend",
             "description": "Créer l'arborescence des dossiers pour le projet React",
             "details": "Créer les dossiers : src/components, src/pages, src/services, src/utils, src/assets, et configurer la structure Vite standard.",
             "testStrategy": "Vérifier que tous les dossiers sont créés et que la structure respecte les conventions Vite.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 1.3,
+            "id": 1,
             "title": "Configurer le fichier pom.xml pour Spring Boot",
             "description": "Créer et configurer le fichier Maven avec toutes les dépendances nécessaires",
             "details": "Configurer Spring Boot 3.3+, Java 21, et ajouter les dépendances pour JPA, Security, Web, et les bibliothèques d'extraction (Tess4J, PDFBox, ZXing, PassportEye).",
             "testStrategy": "Vérifier que le projet compile sans erreurs et que toutes les dépendances sont résolues.",
             "priority": "high",
-            "dependencies": [1.1],
-            "status": "pending"
+            "dependencies": [
+              1.1
+            ],
+            "status": "done"
           },
           {
-            "id": 1.4,
+            "id": 1,
             "title": "Configurer le fichier package.json pour React",
             "description": "Créer et configurer le fichier npm avec toutes les dépendances nécessaires",
             "details": "Configurer React 18, Vite, TailwindCSS, et ajouter les dépendances pour la gestion d'état, les composants UI, et les utilitaires.",
             "testStrategy": "Vérifier que le projet s'installe sans erreurs et que toutes les dépendances sont résolues.",
             "priority": "high",
-            "dependencies": [1.2],
-            "status": "pending"
+            "dependencies": [
+              1.2
+            ],
+            "status": "done"
           },
           {
-            "id": 1.5,
+            "id": 1,
             "title": "Créer le fichier docker-compose.yml",
             "description": "Configurer l'environnement de développement avec Docker Compose",
             "details": "Créer le fichier docker-compose.yml avec les services : backend Spring Boot, frontend React, base de données PostgreSQL, et Ollama LLM.",
             "testStrategy": "Vérifier que tous les services peuvent démarrer avec 'docker-compose up' et que les ports sont correctement exposés.",
             "priority": "high",
-            "dependencies": [1.3, 1.4],
-            "status": "pending"
+            "dependencies": [
+              1.3,
+              1.4
+            ],
+            "status": "done"
           },
           {
-            "id": 1.6,
+            "id": 1,
             "title": "Configurer les fichiers de configuration Spring Boot",
             "description": "Créer les fichiers de configuration pour l'environnement de développement",
             "details": "Créer application.properties/yml avec la configuration de base, les profils de développement, et les paramètres de base de données.",
             "testStrategy": "Vérifier que l'application Spring Boot peut démarrer et se connecter à la base de données.",
             "priority": "medium",
-            "dependencies": [1.5],
-            "status": "pending"
+            "dependencies": [
+              1.5
+            ],
+            "status": "done"
           }
         ]
       },
@@ -83,77 +92,90 @@
         "dependencies": [
           1
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 2.1,
+            "id": 2,
             "title": "Configurer la connexion PostgreSQL",
             "description": "Configurer la connexion à la base de données PostgreSQL dans Spring Boot",
             "details": "Ajouter les propriétés de connexion dans application.properties, configurer le pool de connexions HikariCP, et tester la connectivité.",
             "testStrategy": "Vérifier que l'application peut se connecter à PostgreSQL et que les tables sont créées automatiquement.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 2.2,
+            "id": 2,
             "title": "Créer l'entité User avec JPA",
             "description": "Créer l'entité JPA pour la gestion des utilisateurs",
             "details": "Créer la classe User avec les champs : id, username, email, password (encodé), role (ADMIN/USER), et les annotations JPA appropriées.",
             "testStrategy": "Vérifier que l'entité est correctement mappée en base et que les contraintes sont respectées.",
             "priority": "high",
-            "dependencies": [2.1],
-            "status": "pending"
+            "dependencies": [
+              2.1
+            ],
+            "status": "done"
           },
           {
-            "id": 2.3,
+            "id": 2,
             "title": "Créer l'entité Document avec JPA",
             "description": "Créer l'entité JPA pour la gestion des documents traités",
             "details": "Créer la classe Document avec les champs : id, fileName, fileType, extractedText, uploadedAt, et la relation ManyToOne avec User.",
             "testStrategy": "Vérifier que l'entité est correctement mappée et que les relations sont fonctionnelles.",
             "priority": "high",
-            "dependencies": [2.2],
-            "status": "pending"
+            "dependencies": [
+              2.2
+            ],
+            "status": "done"
           },
           {
-            "id": 2.4,
+            "id": 2,
             "title": "Créer l'entité AuditLog avec JPA",
             "description": "Créer l'entité JPA pour la journalisation des actions",
             "details": "Créer la classe AuditLog avec les champs : id, action, entityType, entityId, userId, timestamp, et les détails de l'action.",
             "testStrategy": "Vérifier que l'entité est correctement mappée et que les logs sont persistés.",
             "priority": "medium",
-            "dependencies": [2.2],
-            "status": "pending"
+            "dependencies": [
+              2.2
+            ],
+            "status": "done"
           },
           {
-            "id": 2.5,
+            "id": 2,
             "title": "Créer les repositories JPA",
             "description": "Créer les interfaces repository pour chaque entité",
             "details": "Créer UserRepository, DocumentRepository, et AuditLogRepository avec les méthodes de base et les requêtes personnalisées nécessaires.",
             "testStrategy": "Vérifier que tous les repositories fonctionnent et que les requêtes retournent les bonnes données.",
             "priority": "medium",
-            "dependencies": [2.3, 2.4],
-            "status": "pending"
+            "dependencies": [
+              2.3,
+              2.4
+            ],
+            "status": "done"
           },
           {
-            "id": 2.6,
+            "id": 2,
             "title": "Configurer les migrations de base de données",
             "description": "Configurer Flyway ou Liquibase pour la gestion des migrations",
             "details": "Configurer le système de migrations, créer le script de création des tables, et configurer l'ordre d'exécution des migrations.",
             "testStrategy": "Vérifier que les migrations s'exécutent correctement et que la structure de la base est conforme.",
             "priority": "medium",
-            "dependencies": [2.5],
-            "status": "pending"
+            "dependencies": [
+              2.5
+            ],
+            "status": "done"
           },
           {
-            "id": 2.7,
+            "id": 2,
             "title": "Créer les services de base de données",
             "description": "Créer les services métier pour la gestion des entités",
             "details": "Créer UserService, DocumentService, et AuditLogService avec la logique métier et la gestion des transactions.",
             "testStrategy": "Vérifier que tous les services fonctionnent et que les transactions sont gérées correctement.",
             "priority": "medium",
-            "dependencies": [2.6],
-            "status": "pending"
+            "dependencies": [
+              2.6
+            ],
+            "status": "done"
           }
         ]
       },
@@ -167,77 +189,89 @@
         "dependencies": [
           2
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 3.1,
+            "id": 3,
             "title": "Configurer Spring Security de base",
             "description": "Configurer la configuration de base de Spring Security",
             "details": "Créer la classe de configuration SecurityConfig, configurer les règles de sécurité de base, et désactiver CSRF pour l'API REST.",
             "testStrategy": "Vérifier que la configuration de sécurité est active et que les endpoints sont correctement protégés.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 3.2,
+            "id": 3,
             "title": "Créer le service d'authentification",
             "description": "Créer le service d'authentification personnalisé",
             "details": "Créer CustomUserDetailsService qui implémente UserDetailsService, charger les utilisateurs depuis la base de données, et gérer les rôles.",
             "testStrategy": "Vérifier que le service charge correctement les utilisateurs et leurs rôles depuis la base de données.",
             "priority": "high",
-            "dependencies": [3.1],
-            "status": "pending"
+            "dependencies": [
+              3.1
+            ],
+            "status": "done"
           },
           {
-            "id": 3.3,
+            "id": 3,
             "title": "Implémenter la génération et validation des tokens JWT",
             "description": "Créer le service JWT pour la gestion des tokens",
             "details": "Créer JwtService avec les méthodes de génération, validation, et extraction des claims JWT, configurer la clé secrète et la durée de vie des tokens.",
             "testStrategy": "Vérifier que les tokens sont générés correctement, qu'ils sont valides, et qu'ils expirent selon la configuration.",
             "priority": "high",
-            "dependencies": [3.2],
-            "status": "pending"
+            "dependencies": [
+              3.2
+            ],
+            "status": "done"
           },
           {
-            "id": 3.4,
+            "id": 3,
             "title": "Créer les endpoints de login/logout",
             "description": "Créer le contrôleur d'authentification avec les endpoints REST",
             "details": "Créer AuthController avec les endpoints POST /auth/login et POST /auth/logout, gérer la validation des credentials, et retourner les tokens JWT.",
             "testStrategy": "Tester le login avec des credentials valides et invalides, vérifier la génération des tokens, et tester le logout.",
             "priority": "high",
-            "dependencies": [3.3],
-            "status": "pending"
+            "dependencies": [
+              3.3
+            ],
+            "status": "done"
           },
           {
-            "id": 3.5,
+            "id": 3,
             "title": "Configurer la gestion des rôles (ADMIN/USER)",
             "description": "Implémenter la gestion des autorisations basées sur les rôles",
             "details": "Configurer les règles d'autorisation pour les différents rôles, créer les annotations @PreAuthorize, et implémenter la logique de contrôle d'accès.",
             "testStrategy": "Tester l'accès aux ressources avec différents rôles, vérifier que les restrictions sont respectées, et tester les cas d'erreur.",
             "priority": "medium",
-            "dependencies": [3.4],
-            "status": "pending"
+            "dependencies": [
+              3.4
+            ],
+            "status": "done"
           },
           {
-            "id": 3.6,
+            "id": 3,
             "title": "Implémenter la protection des endpoints",
             "description": "Protéger tous les endpoints de l'application avec Spring Security",
             "details": "Configurer la protection des endpoints publics et privés, implémenter le filtre JWT, et gérer les exceptions d'authentification.",
             "testStrategy": "Vérifier que tous les endpoints sont correctement protégés, tester l'accès avec et sans tokens valides.",
             "priority": "medium",
-            "dependencies": [3.5],
-            "status": "pending"
+            "dependencies": [
+              3.5
+            ],
+            "status": "done"
           },
           {
-            "id": 3.7,
+            "id": 3,
             "title": "Créer les tests d'authentification",
             "description": "Créer une suite de tests complète pour l'authentification",
             "details": "Créer des tests unitaires pour les services, des tests d'intégration pour les endpoints, et des tests de sécurité pour valider la protection.",
             "testStrategy": "Exécuter tous les tests et vérifier qu'ils passent, couvrir les cas d'erreur et les scénarios de sécurité.",
             "priority": "medium",
-            "dependencies": [3.6],
-            "status": "pending"
+            "dependencies": [
+              3.6
+            ],
+            "status": "done"
           }
         ]
       },
@@ -251,77 +285,89 @@
         "dependencies": [
           3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 4.1,
+            "id": 4,
             "title": "Ajouter les dépendances Tess4J dans pom.xml",
             "description": "Intégrer Tess4J et les dépendances nécessaires pour Tesseract",
             "details": "Ajouter les dépendances Tess4J, configurer les versions compatibles, et vérifier que les bibliothèques natives sont disponibles.",
             "testStrategy": "Vérifier que le projet compile avec Tess4J et que les dépendances sont résolues.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 4.2,
+            "id": 4,
             "title": "Configurer Tesseract dans l'environnement Docker",
             "description": "Configurer Tesseract et les langues dans le conteneur Docker",
             "details": "Modifier le Dockerfile pour installer Tesseract, télécharger les langues français et anglais, et configurer les variables d'environnement.",
             "testStrategy": "Vérifier que Tesseract est installé et que les langues sont disponibles dans le conteneur.",
             "priority": "high",
-            "dependencies": [4.1],
-            "status": "pending"
+            "dependencies": [
+              4.1
+            ],
+            "status": "done"
           },
           {
-            "id": 4.3,
+            "id": 4,
             "title": "Créer le service OCR de base",
             "description": "Créer le service principal pour le traitement OCR des images",
             "details": "Créer OcrService avec les méthodes de base, configurer l'instance Tesseract, et implémenter la gestion des erreurs.",
             "testStrategy": "Vérifier que le service peut traiter des images simples et gérer les erreurs de traitement.",
             "priority": "high",
-            "dependencies": [4.2],
-            "status": "pending"
+            "dependencies": [
+              4.2
+            ],
+            "status": "done"
           },
           {
-            "id": 4.4,
+            "id": 4,
             "title": "Implémenter le support multilingue",
             "description": "Ajouter le support pour plusieurs langues dans le service OCR",
             "details": "Implémenter la détection automatique de langue, configurer le support français/anglais, et créer les méthodes de changement de langue.",
             "testStrategy": "Tester la détection automatique de langue et la reconnaissance dans différentes langues.",
             "priority": "medium",
-            "dependencies": [4.3],
-            "status": "pending"
+            "dependencies": [
+              4.3
+            ],
+            "status": "done"
           },
           {
-            "id": 4.5,
+            "id": 4,
             "title": "Créer les endpoints d'API OCR",
             "description": "Créer les contrôleurs REST pour l'API OCR",
             "details": "Créer OcrController avec les endpoints POST /ocr/process-image et GET /ocr/languages, gérer l'upload d'images et le retour des résultats.",
             "testStrategy": "Tester les endpoints avec différents types d'images, valider les réponses JSON, et tester la gestion des erreurs.",
             "priority": "medium",
-            "dependencies": [4.4],
-            "status": "pending"
+            "dependencies": [
+              4.4
+            ],
+            "status": "done"
           },
           {
-            "id": 4.6,
+            "id": 4,
             "title": "Optimiser la qualité de reconnaissance",
             "description": "Améliorer la qualité de l'OCR avec des pré-traitements d'image",
             "details": "Implémenter des filtres de pré-traitement (contraste, bruit, rotation), configurer les paramètres Tesseract optimaux, et ajouter la validation des résultats.",
             "testStrategy": "Comparer la qualité de reconnaissance avant/après optimisation, tester sur des images de qualité variable.",
             "priority": "low",
-            "dependencies": [4.5],
-            "status": "pending"
+            "dependencies": [
+              4.5
+            ],
+            "status": "done"
           },
           {
-            "id": 4.7,
+            "id": 4,
             "title": "Créer les tests OCR",
             "description": "Créer une suite de tests complète pour le service OCR",
             "details": "Créer des tests unitaires pour OcrService, des tests d'intégration pour les endpoints, et des tests avec des images de référence.",
             "testStrategy": "Exécuter tous les tests OCR, vérifier la couverture de code, et valider les performances.",
             "priority": "medium",
-            "dependencies": [4.6],
-            "status": "pending"
+            "dependencies": [
+              4.6
+            ],
+            "status": "done"
           }
         ]
       },
@@ -335,67 +381,77 @@
         "dependencies": [
           3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 5.1,
+            "id": 5,
             "title": "Ajouter les dépendances PDFBox dans pom.xml",
             "description": "Intégrer Apache PDFBox et les dépendances nécessaires",
             "details": "Ajouter les dépendances PDFBox, configurer les versions compatibles, et vérifier que les bibliothèques sont disponibles.",
             "testStrategy": "Vérifier que le projet compile avec PDFBox et que les dépendances sont résolues.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 5.2,
+            "id": 5,
             "title": "Créer le service de traitement PDF",
             "description": "Créer le service principal pour le traitement des fichiers PDF",
             "details": "Créer PdfService avec les méthodes de base, configurer PDFBox, et implémenter la gestion des erreurs et exceptions.",
             "testStrategy": "Vérifier que le service peut charger des PDF simples et gérer les erreurs de chargement.",
             "priority": "high",
-            "dependencies": [5.1],
-            "status": "pending"
+            "dependencies": [
+              5.1
+            ],
+            "status": "done"
           },
           {
-            "id": 5.3,
+            "id": 5,
             "title": "Implémenter l'extraction de texte",
             "description": "Implémenter l'extraction de texte depuis les documents PDF",
             "details": "Créer les méthodes d'extraction de texte, gérer les différents types de contenu (texte, images), et extraire les métadonnées du PDF.",
             "testStrategy": "Tester l'extraction sur des PDF avec du texte simple, valider la qualité de l'extraction, et vérifier les métadonnées.",
             "priority": "high",
-            "dependencies": [5.2],
-            "status": "pending"
+            "dependencies": [
+              5.2
+            ],
+            "status": "done"
           },
           {
-            "id": 5.4,
+            "id": 5,
             "title": "Gérer différents formats de PDF",
             "description": "Gérer les différents types de PDF et leurs spécificités",
             "details": "Gérer les PDF scannés, les PDF avec des formulaires, les PDF protégés, et implémenter la détection automatique du type de PDF.",
             "testStrategy": "Tester sur différents types de PDF, valider la détection automatique, et vérifier la gestion des cas spéciaux.",
             "priority": "medium",
-            "dependencies": [5.3],
-            "status": "pending"
+            "dependencies": [
+              5.3
+            ],
+            "status": "done"
           },
           {
-            "id": 5.5,
+            "id": 5,
             "title": "Créer les endpoints d'API PDF",
             "description": "Créer les contrôleurs REST pour l'API de traitement PDF",
             "details": "Créer PdfController avec les endpoints POST /pdf/process et GET /pdf/metadata, gérer l'upload de fichiers PDF et le retour des résultats.",
             "testStrategy": "Tester les endpoints avec différents types de PDF, valider les réponses JSON, et tester la gestion des erreurs.",
             "priority": "medium",
-            "dependencies": [5.4],
-            "status": "pending"
+            "dependencies": [
+              5.4
+            ],
+            "status": "done"
           },
           {
-            "id": 5.6,
+            "id": 5,
             "title": "Créer les tests PDF",
             "description": "Créer une suite de tests complète pour le service PDF",
             "details": "Créer des tests unitaires pour PdfService, des tests d'intégration pour les endpoints, et des tests avec des PDF de référence.",
             "testStrategy": "Exécuter tous les tests PDF, vérifier la couverture de code, et valider les performances sur différents types de fichiers.",
             "priority": "medium",
-            "dependencies": [5.5],
-            "status": "pending"
+            "dependencies": [
+              5.5
+            ],
+            "status": "done"
           }
         ]
       },
@@ -409,67 +465,77 @@
         "dependencies": [
           3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 6.1,
+            "id": 6,
             "title": "Ajouter les dépendances ZXing dans pom.xml",
             "description": "Intégrer ZXing et les dépendances nécessaires pour la lecture de codes-barres",
             "details": "Ajouter les dépendances ZXing, configurer les versions compatibles, et vérifier que les bibliothèques sont disponibles.",
             "testStrategy": "Vérifier que le projet compile avec ZXing et que les dépendances sont résolues.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 6.2,
+            "id": 6,
             "title": "Créer le service de détection de codes-barres",
             "description": "Créer le service principal pour la détection et lecture de codes-barres",
             "details": "Créer BarcodeService avec les méthodes de base, configurer ZXing, et implémenter la gestion des erreurs et exceptions.",
             "testStrategy": "Vérifier que le service peut détecter des codes-barres simples et gérer les erreurs de traitement.",
             "priority": "high",
-            "dependencies": [6.1],
-            "status": "pending"
+            "dependencies": [
+              6.1
+            ],
+            "status": "done"
           },
           {
-            "id": 6.3,
+            "id": 6,
             "title": "Implémenter la lecture de QR codes",
             "description": "Implémenter la détection et lecture de QR codes",
             "details": "Créer les méthodes de lecture de QR codes, gérer différents formats de QR codes, et extraire les informations encodées.",
             "testStrategy": "Tester la lecture de différents types de QR codes, valider la précision de détection, et vérifier l'extraction des données.",
             "priority": "high",
-            "dependencies": [6.2],
-            "status": "pending"
+            "dependencies": [
+              6.2
+            ],
+            "status": "done"
           },
           {
-            "id": 6.4,
+            "id": 6,
             "title": "Implémenter la lecture de codes-barres (EAN, UPC, Code128, Code39)",
             "description": "Implémenter la détection et lecture de différents types de codes-barres",
             "details": "Créer les méthodes de lecture pour EAN, UPC, Code128, Code39, gérer les différents formats, et extraire les informations.",
             "testStrategy": "Tester la lecture de différents types de codes-barres, valider la précision de détection, et vérifier l'extraction des données.",
             "priority": "high",
-            "dependencies": [6.3],
-            "status": "pending"
+            "dependencies": [
+              6.3
+            ],
+            "status": "done"
           },
           {
-            "id": 6.5,
+            "id": 6,
             "title": "Créer les endpoints d'API codes-barres",
             "description": "Créer les contrôleurs REST pour l'API de lecture de codes-barres",
             "details": "Créer BarcodeController avec les endpoints POST /barcode/process-image et GET /barcode/types, gérer l'upload d'images et le retour des résultats.",
             "testStrategy": "Tester les endpoints avec différents types de codes-barres, valider les réponses JSON, et tester la gestion des erreurs.",
             "priority": "medium",
-            "dependencies": [6.4],
-            "status": "pending"
+            "dependencies": [
+              6.4
+            ],
+            "status": "done"
           },
           {
-            "id": 6.6,
+            "id": 6,
             "title": "Créer les tests codes-barres",
             "description": "Créer une suite de tests complète pour le service de codes-barres",
             "details": "Créer des tests unitaires pour BarcodeService, des tests d'intégration pour les endpoints, et des tests avec des images de référence.",
             "testStrategy": "Exécuter tous les tests de codes-barres, vérifier la couverture de code, et valider les performances.",
             "priority": "medium",
-            "dependencies": [6.5],
-            "status": "pending"
+            "dependencies": [
+              6.5
+            ],
+            "status": "done"
           }
         ]
       },
@@ -483,77 +549,89 @@
         "dependencies": [
           3
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 7.1,
+            "id": 7,
             "title": "Ajouter les dépendances PassportEye dans pom.xml",
             "description": "Intégrer PassportEye et les dépendances nécessaires pour l'extraction MRZ",
             "details": "Ajouter les dépendances PassportEye, configurer les versions compatibles, et vérifier que les bibliothèques sont disponibles.",
             "testStrategy": "Vérifier que le projet compile avec PassportEye et que les dépendances sont résolues.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 7.2,
+            "id": 7,
             "title": "Créer le service de détection MRZ",
             "description": "Créer le service principal pour la détection et extraction MRZ",
             "details": "Créer MrzService avec les méthodes de base, configurer PassportEye, et implémenter la gestion des erreurs et exceptions.",
             "testStrategy": "Vérifier que le service peut détecter des zones MRZ simples et gérer les erreurs de traitement.",
             "priority": "high",
-            "dependencies": [7.1],
-            "status": "pending"
+            "dependencies": [
+              7.1
+            ],
+            "status": "done"
           },
           {
-            "id": 7.3,
+            "id": 7,
             "title": "Implémenter la détection automatique de la zone MRZ",
             "description": "Implémenter la détection automatique de la zone MRZ sur les documents",
             "details": "Créer les méthodes de détection automatique, gérer différents types de documents (passeports, CNI), et optimiser la précision de détection.",
             "testStrategy": "Tester la détection sur différents types de documents, valider la précision de détection, et vérifier la gestion des cas spéciaux.",
             "priority": "high",
-            "dependencies": [7.2],
-            "status": "pending"
+            "dependencies": [
+              7.2
+            ],
+            "status": "done"
           },
           {
-            "id": 7.4,
+            "id": 7,
             "title": "Extraire les informations de base (nom, prénom)",
             "description": "Implémenter l'extraction des informations de base depuis la zone MRZ",
             "details": "Créer les méthodes d'extraction du nom et prénom, gérer les différents formats de noms, et valider la qualité des données extraites.",
             "testStrategy": "Tester l'extraction sur des documents avec des noms variés, valider la précision, et vérifier la gestion des caractères spéciaux.",
             "priority": "high",
-            "dependencies": [7.3],
-            "status": "pending"
+            "dependencies": [
+              7.3
+            ],
+            "status": "done"
           },
           {
-            "id": 7.5,
+            "id": 7,
             "title": "Extraire les informations avancées (date de naissance, numéro)",
             "description": "Implémenter l'extraction des informations avancées depuis la zone MRZ",
             "details": "Créer les méthodes d'extraction de la date de naissance et du numéro de document, gérer les différents formats, et valider la cohérence des données.",
             "testStrategy": "Tester l'extraction sur des documents avec des formats variés, valider la précision des dates et numéros, et vérifier la validation des données.",
             "priority": "medium",
-            "dependencies": [7.4],
-            "status": "pending"
+            "dependencies": [
+              7.4
+            ],
+            "status": "done"
           },
           {
-            "id": 7.6,
+            "id": 7,
             "title": "Créer les endpoints d'API MRZ",
             "description": "Créer les contrôleurs REST pour l'API d'extraction MRZ",
             "details": "Créer MrzController avec les endpoints POST /mrz/process-document et GET /mrz/validate, gérer l'upload de documents et le retour des résultats.",
             "testStrategy": "Tester les endpoints avec différents types de documents, valider les réponses JSON, et tester la gestion des erreurs.",
             "priority": "medium",
-            "dependencies": [7.5],
-            "status": "pending"
+            "dependencies": [
+              7.5
+            ],
+            "status": "done"
           },
           {
-            "id": 7.7,
+            "id": 7,
             "title": "Créer les tests MRZ",
             "description": "Créer une suite de tests complète pour le service MRZ",
             "details": "Créer des tests unitaires pour MrzService, des tests d'intégration pour les endpoints, et des tests avec des documents de référence.",
             "testStrategy": "Exécuter tous les tests MRZ, vérifier la couverture de code, et valider les performances sur différents types de documents.",
             "priority": "medium",
-            "dependencies": [7.6],
-            "status": "pending"
+            "dependencies": [
+              7.6
+            ],
+            "status": "done"
           }
         ]
       },
@@ -570,77 +648,89 @@
           6,
           7
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 8.1,
+            "id": 8,
             "title": "Configurer le service Ollama dans Docker",
             "description": "Configurer le service Ollama dans l'environnement Docker",
             "details": "Modifier le docker-compose.yml pour inclure le service Ollama, configurer les volumes et les variables d'environnement, et télécharger le modèle llama3.",
             "testStrategy": "Vérifier que le service Ollama démarre correctement et que le modèle est disponible.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 8.2,
+            "id": 8,
             "title": "Créer le service OllamaService",
             "description": "Créer le service principal pour l'intégration avec Ollama",
             "details": "Créer OllamaService avec les méthodes de base, configurer RestTemplate, et implémenter la gestion des erreurs et exceptions.",
             "testStrategy": "Vérifier que le service peut se connecter à Ollama et gérer les erreurs de connexion.",
             "priority": "high",
-            "dependencies": [8.1],
-            "status": "pending"
+            "dependencies": [
+              8.1
+            ],
+            "status": "done"
           },
           {
-            "id": 8.3,
+            "id": 8,
             "title": "Implémenter l'appel à l'API REST Ollama",
             "description": "Implémenter l'appel à l'API REST Ollama pour la génération de texte",
             "details": "Créer les méthodes d'appel à l'API Ollama, gérer les requêtes HTTP, et implémenter la gestion des réponses et des erreurs.",
             "testStrategy": "Tester l'appel à l'API Ollama, valider les réponses, et tester la gestion des erreurs de réseau.",
             "priority": "high",
-            "dependencies": [8.2],
-            "status": "pending"
+            "dependencies": [
+              8.2
+            ],
+            "status": "done"
           },
           {
-            "id": 8.4,
+            "id": 8,
             "title": "Créer les prompts pour l'analyse des documents",
             "description": "Créer des prompts optimisés pour l'analyse des différents types de documents",
             "details": "Créer des prompts spécialisés pour l'OCR, les PDF, les codes-barres, et les documents MRZ, optimiser pour la structuration des données.",
             "testStrategy": "Tester les prompts sur différents types de documents, valider la qualité des réponses, et optimiser les prompts.",
             "priority": "medium",
-            "dependencies": [8.3],
-            "status": "pending"
+            "dependencies": [
+              8.3
+            ],
+            "status": "done"
           },
           {
-            "id": 8.5,
+            "id": 8,
             "title": "Structurer les réponses du LLM",
             "description": "Implémenter la structuration et le traitement des réponses du LLM",
             "details": "Créer des modèles de données pour structurer les réponses, implémenter le parsing des réponses JSON, et gérer la validation des données.",
             "testStrategy": "Tester la structuration des réponses, valider le parsing JSON, et vérifier la cohérence des données structurées.",
             "priority": "medium",
-            "dependencies": [8.4],
-            "status": "pending"
+            "dependencies": [
+              8.4
+            ],
+            "status": "done"
           },
           {
-            "id": 8.6,
+            "id": 8,
             "title": "Créer les endpoints d'API LLM",
             "description": "Créer les contrôleurs REST pour l'API d'analyse LLM",
             "details": "Créer OllamaController avec les endpoints POST /llm/analyze et GET /llm/models, gérer l'analyse des documents et le retour des résultats structurés.",
             "testStrategy": "Tester les endpoints avec différents types de documents, valider les réponses JSON, et tester la gestion des erreurs.",
             "priority": "medium",
-            "dependencies": [8.5],
-            "status": "pending"
+            "dependencies": [
+              8.5
+            ],
+            "status": "done"
           },
           {
-            "id": 8.7,
+            "id": 8,
             "title": "Créer les tests LLM",
             "description": "Créer une suite de tests complète pour l'intégration Ollama",
             "details": "Créer des tests unitaires pour OllamaService, des tests d'intégration pour les endpoints, et des tests avec des documents de référence.",
             "testStrategy": "Exécuter tous les tests LLM, vérifier la couverture de code, et valider les performances de l'intégration.",
             "priority": "medium",
-            "dependencies": [8.6],
-            "status": "pending"
+            "dependencies": [
+              8.6
+            ],
+            "status": "done"
           }
         ]
       },
@@ -654,87 +744,101 @@
         "dependencies": [
           8
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 9.1,
+            "id": 9,
             "title": "Configurer Vite et TailwindCSS",
             "description": "Configurer l'environnement de développement React avec Vite et TailwindCSS",
             "details": "Configurer Vite pour React, installer et configurer TailwindCSS, créer la structure de base du projet, et configurer les alias de chemins.",
             "testStrategy": "Vérifier que le projet démarre avec 'npm run dev', que TailwindCSS est fonctionnel, et que la structure est correcte.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 9.2,
+            "id": 9,
             "title": "Créer le composant de navigation",
             "description": "Créer le composant de navigation principal de l'application",
             "details": "Créer NavigationBar avec le logo, les liens de navigation, le menu utilisateur, et la gestion de l'état d'authentification.",
             "testStrategy": "Tester la navigation, vérifier la responsivité, et tester la gestion de l'état d'authentification.",
             "priority": "high",
-            "dependencies": [9.1],
-            "status": "pending"
+            "dependencies": [
+              9.1
+            ],
+            "status": "done"
           },
           {
-            "id": 9.3,
+            "id": 9,
             "title": "Créer le composant d'authentification (login/logout)",
             "description": "Créer les composants d'authentification pour la gestion des utilisateurs",
             "details": "Créer LoginForm et LogoutButton, gérer la soumission du formulaire, la gestion des erreurs, et l'intégration avec l'API backend.",
             "testStrategy": "Tester le formulaire de login, valider la gestion des erreurs, et tester l'intégration avec l'API d'authentification.",
             "priority": "high",
-            "dependencies": [9.2],
-            "status": "pending"
+            "dependencies": [
+              9.2
+            ],
+            "status": "done"
           },
           {
-            "id": 9.4,
+            "id": 9,
             "title": "Créer le composant d'upload de fichiers",
             "description": "Créer le composant pour l'upload et la gestion des fichiers",
             "details": "Créer FileUpload avec le drag & drop, la sélection de fichiers, la validation des types, et l'affichage de la progression.",
             "testStrategy": "Tester l'upload de fichiers, valider la validation des types, et tester l'affichage de la progression.",
             "priority": "high",
-            "dependencies": [9.3],
-            "status": "pending"
+            "dependencies": [
+              9.3
+            ],
+            "status": "done"
           },
           {
-            "id": 9.5,
+            "id": 9,
             "title": "Créer le composant de visualisation des résultats",
             "description": "Créer le composant pour l'affichage des résultats d'extraction",
             "details": "Créer ResultsViewer avec l'affichage des données extraites, la navigation entre les résultats, et l'export des données.",
             "testStrategy": "Tester l'affichage des résultats, valider la navigation, et tester l'export des données.",
             "priority": "medium",
-            "dependencies": [9.4],
-            "status": "pending"
+            "dependencies": [
+              9.4
+            ],
+            "status": "done"
           },
           {
-            "id": 9.6,
+            "id": 9,
             "title": "Créer le composant de dashboard",
             "description": "Créer le composant principal du dashboard de l'application",
             "details": "Créer Dashboard avec les statistiques, l'historique des documents, les graphiques de performance, et la gestion des filtres.",
             "testStrategy": "Tester le dashboard, valider les statistiques, et tester la gestion des filtres.",
             "priority": "medium",
-            "dependencies": [9.5],
-            "status": "pending"
+            "dependencies": [
+              9.5
+            ],
+            "status": "done"
           },
           {
-            "id": 9.7,
+            "id": 9,
             "title": "Implémenter la gestion d'état (Context API ou Redux)",
             "description": "Implémenter la gestion d'état globale de l'application",
             "details": "Créer le contexte d'authentification, le contexte des documents, et la gestion des états de chargement et d'erreur.",
             "testStrategy": "Tester la gestion d'état, valider la persistance des données, et tester la gestion des erreurs.",
             "priority": "medium",
-            "dependencies": [9.6],
-            "status": "pending"
+            "dependencies": [
+              9.6
+            ],
+            "status": "done"
           },
           {
-            "id": 9.8,
+            "id": 9,
             "title": "Créer les tests frontend",
             "description": "Créer une suite de tests complète pour les composants React",
             "details": "Créer des tests unitaires pour les composants, des tests d'intégration pour les pages, et des tests de bout en bout.",
             "testStrategy": "Exécuter tous les tests frontend, vérifier la couverture de code, et valider la responsivité.",
             "priority": "medium",
-            "dependencies": [9.7],
-            "status": "pending"
+            "dependencies": [
+              9.7
+            ],
+            "status": "done"
           }
         ]
       },
@@ -748,77 +852,89 @@
         "dependencies": [
           9
         ],
-        "status": "pending",
+        "status": "done",
         "subtasks": [
           {
-            "id": 10.1,
+            "id": 10,
             "title": "Configurer Spring AOP",
             "description": "Configurer Spring AOP pour la gestion des aspects d'audit",
             "details": "Configurer Spring AOP dans le projet, activer les aspects, et configurer les paramètres de performance pour la gestion des aspects.",
             "testStrategy": "Vérifier que Spring AOP est configuré et que les aspects peuvent être créés.",
             "priority": "high",
             "dependencies": [],
-            "status": "pending"
+            "status": "done"
           },
           {
-            "id": 10.2,
+            "id": 10,
             "title": "Créer les aspects d'audit de base",
             "description": "Créer les aspects d'audit de base pour la journalisation des actions",
             "details": "Créer AuditAspect avec les pointcuts de base, configurer la journalisation des méthodes publiques, et implémenter la gestion des exceptions.",
             "testStrategy": "Vérifier que les aspects d'audit sont actifs et que les méthodes sont interceptées.",
             "priority": "high",
-            "dependencies": [10.1],
-            "status": "pending"
+            "dependencies": [
+              10.1
+            ],
+            "status": "done"
           },
           {
-            "id": 10.3,
+            "id": 10,
             "title": "Implémenter l'audit des opérations CRUD",
             "description": "Implémenter l'audit spécifique pour les opérations CRUD",
             "details": "Créer des aspects spécialisés pour Create, Read, Update, Delete, tracer les paramètres d'entrée, et journaliser les résultats.",
             "testStrategy": "Tester l'audit sur toutes les opérations CRUD, valider la journalisation des paramètres et des résultats.",
             "priority": "medium",
-            "dependencies": [10.2],
-            "status": "pending"
+            "dependencies": [
+              10.2
+            ],
+            "status": "done"
           },
           {
-            "id": 10.4,
+            "id": 10,
             "title": "Implémenter l'audit de l'authentification",
             "description": "Implémenter l'audit spécifique pour les opérations d'authentification",
             "details": "Créer des aspects pour le login, logout, et les tentatives d'accès, tracer les tentatives échouées, et journaliser les informations de sécurité.",
             "testStrategy": "Tester l'audit de l'authentification, valider la journalisation des tentatives échouées, et vérifier la sécurité des informations.",
             "priority": "medium",
-            "dependencies": [10.3],
-            "status": "pending"
+            "dependencies": [
+              10.3
+            ],
+            "status": "done"
           },
           {
-            "id": 10.5,
+            "id": 10,
             "title": "Créer les endpoints de consultation des logs",
             "description": "Créer les endpoints REST pour la consultation des logs d'audit",
             "details": "Créer AuditController avec les endpoints GET /audit/logs, GET /audit/logs/{id}, et GET /audit/logs/search, gérer la pagination et les filtres.",
             "testStrategy": "Tester les endpoints de consultation, valider la pagination, et tester les filtres de recherche.",
             "priority": "medium",
-            "dependencies": [10.4],
-            "status": "pending"
+            "dependencies": [
+              10.4
+            ],
+            "status": "done"
           },
           {
-            "id": 10.6,
+            "id": 10,
             "title": "Optimiser la performance du système d'audit",
             "description": "Optimiser les performances du système d'audit pour les applications en production",
             "details": "Implémenter la journalisation asynchrone, optimiser les requêtes de base de données, et configurer la rotation des logs.",
             "testStrategy": "Tester les performances du système d'audit, valider la journalisation asynchrone, et vérifier l'impact sur les performances globales.",
             "priority": "low",
-            "dependencies": [10.5],
-            "status": "pending"
+            "dependencies": [
+              10.5
+            ],
+            "status": "done"
           },
           {
-            "id": 10.7,
+            "id": 10,
             "title": "Créer les tests d'audit",
             "description": "Créer une suite de tests complète pour le système d'audit",
             "details": "Créer des tests unitaires pour les aspects, des tests d'intégration pour les endpoints, et des tests de performance.",
             "testStrategy": "Exécuter tous les tests d'audit, vérifier la couverture de code, et valider les performances.",
             "priority": "medium",
-            "dependencies": [10.6],
-            "status": "pending"
+            "dependencies": [
+              10.6
+            ],
+            "status": "done"
           }
         ]
       }
@@ -829,7 +945,10 @@
       "totalSubtasks": 67,
       "sourceFile": ".taskmaster/docs/prd.txt",
       "generatedAt": "2025-08-25",
-      "lastUpdated": "2025-01-27"
+      "lastUpdated": "2025-01-27",
+      "created": "2025-09-06T11:34:55.053Z",
+      "description": "Tasks for master context",
+      "updated": "2025-09-06T11:36:36.606Z"
     }
   }
 }

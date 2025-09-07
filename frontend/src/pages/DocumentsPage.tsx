@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { documentApi } from '../services/api';
 import { Button, Card, LoadingSpinner } from '../components/ui';
@@ -24,7 +24,7 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ onDocumentSelect }) => {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   // Charger les documents
-  const loadDocuments = async (page: number = 0) => {
+  const loadDocuments = useCallback(async (page: number = 0) => {
     try {
       setLoading(true);
       setError(null);
@@ -69,12 +69,12 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ onDocumentSelect }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, fileTypeFilter, searchQuery, sortBy, sortDir]);
 
   // Charger les documents au montage et lors des changements de filtres
   useEffect(() => {
     loadDocuments(0);
-  }, [statusFilter, fileTypeFilter, sortBy, sortDir]);
+  }, [loadDocuments]);
 
   // Recherche avec debounce
   useEffect(() => {
@@ -85,7 +85,7 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ onDocumentSelect }) => {
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+  }, [searchQuery, loadDocuments]);
 
   // Gérer le changement de page
   const handlePageChange = (page: number) => {

@@ -169,3 +169,8 @@ Pour toute question ou problème :
 2. Vérifiez les logs du backend
 3. Consultez la documentation de l'API
 4. Vérifiez la configuration des CORS si nécessaire
+
+
+
+
+

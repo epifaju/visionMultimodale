@@ -49,7 +49,7 @@ public class Document {
     @Column(name = "processing_errors", columnDefinition = "TEXT")
     private String processingErrors;
 
-    @Column(name = "metadata", columnDefinition = "JSONB")
+    @Column(name = "metadata", columnDefinition = "TEXT")
     private String metadata; // JSON string for flexible metadata storage
 
     @ManyToOne(fetch = FetchType.LAZY)

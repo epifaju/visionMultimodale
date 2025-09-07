@@ -17,7 +17,7 @@ public class OllamaService {
     @Value("${ollama.url:http://localhost:11434/api/generate}")
     private String ollamaUrl;
 
-    @Value("${ollama.model:llama3:latest}")
+    @Value("${ollama.model:llama3.2:1b}")
     private String model;
 
     private final RestTemplate restTemplate;
@@ -45,11 +45,11 @@ public class OllamaService {
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
-            ResponseEntity<Map> response = restTemplate.exchange(
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     ollamaUrl,
                     HttpMethod.POST,
                     entity,
-                    Map.class);
+                    (Class<Map<String, Object>>) (Class<?>) Map.class);
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 Map<String, Object> responseBody = response.getBody();
@@ -121,6 +121,68 @@ public class OllamaService {
         String prompt = String.format("Traduis le texte suivant en %s. Retourne uniquement la traduction:\n\n%s",
                 targetLanguage, text);
         return analyzeText(text, prompt);
+    }
+
+    /**
+     * Analyse une image avec du texte (pour l'endpoint /analyze)
+     */
+    public OllamaResult analyzeImageWithText(byte[] imageBytes, String fileName, String prompt) {
+        try {
+            log.info("🤖 Starting Ollama image analysis for file: {} with prompt: {}", fileName, prompt);
+
+            // Encoder l'image en base64 pour l'envoyer à Ollama
+            String base64Image = java.util.Base64.getEncoder().encodeToString(imageBytes);
+
+            // Construction de la requête pour l'analyse d'image
+            Map<String, Object> request = new HashMap<>();
+            request.put("model", model);
+            request.put("prompt", prompt);
+            request.put("images", new String[] { base64Image });
+            request.put("stream", false);
+            request.put("options", buildOptions());
+
+            // Appel à l'API Ollama
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                    ollamaUrl,
+                    HttpMethod.POST,
+                    entity,
+                    (Class<Map<String, Object>>) (Class<?>) Map.class);
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                Map<String, Object> responseBody = response.getBody();
+
+                OllamaResult result = new OllamaResult();
+                result.setSuccess(true);
+                result.setModel(model);
+                result.setPrompt(prompt);
+                result.setResponse((String) responseBody.get("response"));
+                result.setDone((Boolean) responseBody.getOrDefault("done", true));
+
+                // Ajouter les métadonnées si disponibles
+                if (responseBody.containsKey("total_duration")) {
+                    Map<String, Object> metadata = new HashMap<>();
+                    metadata.put("totalDuration", (Long) responseBody.get("total_duration"));
+                    metadata.put("evalCount", (Integer) responseBody.get("eval_count"));
+                    metadata.put("promptEvalCount", (Integer) responseBody.get("prompt_eval_count"));
+                    metadata.put("evalDuration", (Long) responseBody.get("eval_duration"));
+                    result.setMetadata(metadata);
+                }
+
+                log.info("✅ Ollama image analysis completed successfully for {}", fileName);
+                return result;
+            } else {
+                log.error("❌ Ollama API returned error status: {}", response.getStatusCode());
+                return createErrorResult("Ollama API error: " + response.getStatusCode());
+            }
+
+        } catch (Exception e) {
+            log.error("❌ Ollama image analysis failed for {}: {}", fileName, e.getMessage(), e);
+            return createErrorResult("Image analysis failed: " + e.getMessage());
+        }
     }
 
     /**

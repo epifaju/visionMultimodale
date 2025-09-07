@@ -159,7 +159,7 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
 
   // Action de chargement des documents depuis l'API
   loadDocuments: async (params = {}) => {
-    set({ isLoading: true, error: null })
+    set({ isLoading: true, error: null });
     
     try {
       const response = await documentApi.getDocuments({
@@ -170,19 +170,33 @@ export const useDocumentStore = create<DocumentState>((set, get) => ({
         status: params.status,
         fileType: params.fileType,
         searchQuery: params.searchQuery
-      })
+      });
 
-      set({
-        documents: response.content,
-        totalElements: response.totalElements,
-        totalPages: response.totalPages,
-        currentPage: response.currentPage,
-        isLoading: false
-      })
+      // Vérifier que la réponse a la structure attendue
+      if (response && typeof response === 'object') {
+        set({
+          documents: response.content || [],
+          totalElements: response.totalElements || 0,
+          totalPages: response.totalPages || 0,
+          currentPage: response.currentPage || 0,
+          isLoading: false
+        });
+      } else {
+        throw new Error('Réponse invalide du serveur');
+      }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erreur de chargement des documents'
-      set({ isLoading: false, error: errorMessage })
-      console.error('Erreur lors du chargement des documents:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Erreur de chargement des documents';
+      console.error('Erreur lors du chargement des documents:', error);
+      
+      // En cas d'erreur, initialiser avec des valeurs par défaut
+      set({ 
+        isLoading: false, 
+        error: errorMessage,
+        documents: [],
+        totalElements: 0,
+        totalPages: 0,
+        currentPage: 0
+      });
     }
   },
 
