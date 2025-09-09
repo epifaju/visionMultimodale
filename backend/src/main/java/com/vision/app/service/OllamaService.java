@@ -24,6 +24,11 @@ public class OllamaService {
 
     public OllamaService() {
         this.restTemplate = new RestTemplate();
+        // Configuration du timeout pour les modèles de vision
+        org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(15000); // 15 secondes
+        factory.setReadTimeout(300000); // 5 minutes pour l'analyse d'images
+        this.restTemplate.setRequestFactory(factory);
     }
 
     /**
@@ -319,13 +324,7 @@ public class OllamaService {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(testRequest, headers);
 
-            // Test avec un timeout court
-            restTemplate.setRequestFactory(new org.springframework.http.client.SimpleClientHttpRequestFactory());
-            ((org.springframework.http.client.SimpleClientHttpRequestFactory) restTemplate.getRequestFactory())
-                    .setConnectTimeout(5000);
-            ((org.springframework.http.client.SimpleClientHttpRequestFactory) restTemplate.getRequestFactory())
-                    .setReadTimeout(5000);
-
+            // Utiliser le RestTemplate configuré avec les bons timeouts
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     ollamaUrl,
                     HttpMethod.POST,

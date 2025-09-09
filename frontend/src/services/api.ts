@@ -303,7 +303,7 @@ export const documentApi = {
     
     try {
       const response = await api.post('/documents/analyze', formData, {
-        timeout: 120000, // 2 minutes pour l'IA
+        timeout: 360000, // 6 minutes pour l'IA (plus que le backend pour être sûr)
         maxContentLength: 50 * 1024 * 1024,
         maxBodyLength: 50 * 1024 * 1024,
       });
