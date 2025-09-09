@@ -50,3 +50,6 @@ if ($documentsResponse.content.Count -gt 0) {
 # 5. Nettoyage
 Remove-Item $testFile -Force -ErrorAction SilentlyContinue
 Write-Host "`nTest termine!" -ForegroundColor Cyan
+
+
+

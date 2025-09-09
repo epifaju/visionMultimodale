@@ -126,3 +126,4 @@ if (Test-Path $testPdfPath) {
     Remove-Item $testPdfPath -Force
     Write-Host "`n   Fichier de test supprimé" -ForegroundColor Gray
 }
+

@@ -63,3 +63,6 @@ try {
 }
 
 Write-Host "`nCreation de l'utilisateur admin terminee!" -ForegroundColor Cyan
+
+
+

@@ -70,3 +70,6 @@ if (Test-Path $testFile) {
 }
 
 Write-Host "`nTest complet termine!" -ForegroundColor Cyan
+
+
+

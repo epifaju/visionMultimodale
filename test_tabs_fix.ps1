@@ -54,3 +54,6 @@ Write-Host "   - Ajout de l'état 'activeTab' pour gérer l'onglet actif" -Foreg
 Write-Host "   - Correction de la logique des boutons d'onglets" -ForegroundColor Gray
 Write-Host "   - Utilisation de 'activeTab' au lieu de '!selectedFile' pour l'affichage" -ForegroundColor Gray
 Write-Host "   - Les onglets fonctionnent maintenant correctement" -ForegroundColor Gray
+
+
+

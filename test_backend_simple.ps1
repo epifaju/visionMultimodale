@@ -35,3 +35,4 @@ try {
     Write-Host "❌ CORS échoué" -ForegroundColor Red
     Write-Host "   Erreur: $($_.Exception.Message)" -ForegroundColor Red
 }
+

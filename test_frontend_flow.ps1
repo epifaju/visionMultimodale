@@ -59,3 +59,6 @@ Write-Host "   4. Allez dans l'onglet 'Documents' pour voir les documents" -Fore
 Write-Host "   5. Vérifiez la console du navigateur pour les logs" -ForegroundColor White
 
 Write-Host "`n✅ Test de configuration terminé!" -ForegroundColor Green
+
+
+

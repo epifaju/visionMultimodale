@@ -97,3 +97,6 @@ Write-Host "   Connectez-vous avec: admin / admin123" -ForegroundColor White
 Write-Host "   Les problèmes CORS devraient être résolus" -ForegroundColor White
 
 Write-Host "`n✅ Redémarrage terminé!" -ForegroundColor Green
+
+
+

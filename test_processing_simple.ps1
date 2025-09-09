@@ -35,3 +35,6 @@ Write-Host "4. Cliquez sur l'onglet 'Document uploadé'" -ForegroundColor White
 Write-Host "5. Vous devriez voir vos documents uploadés" -ForegroundColor White
 
 Write-Host "`nTest termine!" -ForegroundColor Green
+
+
+

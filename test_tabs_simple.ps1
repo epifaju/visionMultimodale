@@ -36,3 +36,6 @@ Write-Host "   - 'Document uploade' (doit montrer la liste)" -ForegroundColor Gr
 Write-Host "5. Verifiez que les onglets changent visuellement" -ForegroundColor White
 
 Write-Host "`nTest termine!" -ForegroundColor Green
+
+
+

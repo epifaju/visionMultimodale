@@ -26,3 +26,6 @@ if ($documentsResponse.content.Count -gt 0) {
 
 # Nettoyage
 Remove-Item $testFile -Force -ErrorAction SilentlyContinue
+
+
+

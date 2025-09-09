@@ -10,8 +10,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/public")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://localhost:4173"}, 
+             allowCredentials = "true")
 @Slf4j
-@CrossOrigin(origins = "*")
 public class PublicController {
 
     @GetMapping("/health")

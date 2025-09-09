@@ -103,3 +103,4 @@ try {
     Write-Host "❌ Endpoint /documents/test non accessible" -ForegroundColor Red
     Write-Host "   Erreur: $($_.Exception.Message)" -ForegroundColor Red
 }
+

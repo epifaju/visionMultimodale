@@ -13,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/services")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Slf4j
 public class ServiceController {

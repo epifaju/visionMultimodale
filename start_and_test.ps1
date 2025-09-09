@@ -116,8 +116,20 @@ finally {
     Pop-Location
 }
 
-# Étape 5: Compiler et démarrer l'application React
-Write-Host "`n📋 ÉTAPE 5: Compilation et démarrage de l'application React" -ForegroundColor Magenta
+# Étape 5: Initialiser les utilisateurs par défaut
+Write-Host "`n📋 ÉTAPE 5: Initialisation des utilisateurs par défaut" -ForegroundColor Magenta
+Write-Host "👤 Initialisation de l'utilisateur admin..." -ForegroundColor Yellow
+
+try {
+    .\init_default_user.ps1
+    Write-Host "✅ Utilisateurs initialisés" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Erreur lors de l'initialisation des utilisateurs: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "⚠️ Vous devrez créer manuellement l'utilisateur admin" -ForegroundColor Yellow
+}
+
+# Étape 6: Compiler et démarrer l'application React
+Write-Host "`n📋 ÉTAPE 6: Compilation et démarrage de l'application React" -ForegroundColor Magenta
 
 # Aller dans le répertoire frontend
 Push-Location frontend
@@ -160,8 +172,8 @@ finally {
     Pop-Location
 }
 
-# Étape 6: Lancer les tests
-Write-Host "`n📋 ÉTAPE 6: Lancement des tests" -ForegroundColor Magenta
+# Étape 7: Lancer les tests
+Write-Host "`n📋 ÉTAPE 7: Lancement des tests" -ForegroundColor Magenta
 Write-Host "🧪 Lancement des tests de l'API..." -ForegroundColor Yellow
 
 try {
@@ -172,15 +184,15 @@ catch {
     Write-Host "❌ Erreur lors des tests: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-# Étape 7: Afficher les URLs d'accès
-Write-Host "`n📋 ÉTAPE 7: URLs d'accès" -ForegroundColor Magenta
+# Étape 8: Afficher les URLs d'accès
+Write-Host "`n📋 ÉTAPE 8: URLs d'accès" -ForegroundColor Magenta
 Write-Host "🌐 Application React: http://localhost:5173" -ForegroundColor Cyan
 Write-Host "🔧 API Backend: http://localhost:8080/api" -ForegroundColor Cyan
 Write-Host "📊 Statut des services: http://localhost:8080/api/documents/status" -ForegroundColor Cyan
 Write-Host "🔍 Swagger UI: http://localhost:8080/swagger-ui.html" -ForegroundColor Cyan
 
-# Étape 8: Instructions pour arrêter les services
-Write-Host "`n📋 ÉTAPE 8: Instructions d'arrêt" -ForegroundColor Magenta
+# Étape 9: Instructions pour arrêter les services
+Write-Host "`n📋 ÉTAPE 9: Instructions d'arrêt" -ForegroundColor Magenta
 Write-Host "🛑 Pour arrêter les services:" -ForegroundColor Yellow
 Write-Host "   - Appuyez sur Ctrl+C dans cette fenêtre" -ForegroundColor Gray
 Write-Host "   - Ou exécutez: docker-compose down" -ForegroundColor Gray

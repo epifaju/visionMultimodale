@@ -1,65 +1,57 @@
 # Test de la correction CORS
-Write-Host "Test de la correction CORS" -ForegroundColor Cyan
+Write-Host "🔧 Test de la correction CORS..." -ForegroundColor Yellow
 
-# 1. Vérifier que les services sont démarrés
-Write-Host "`n1. Vérification des services..." -ForegroundColor Yellow
-
-# Backend
+# Test 1: Vérifier que le backend répond
+Write-Host "`n1. Test de connectivité backend..." -ForegroundColor Cyan
 try {
-    $healthResponse = Invoke-RestMethod -Uri "http://localhost:8080/api/public/health" -Method GET
-    Write-Host "✅ Backend accessible" -ForegroundColor Green
+    $response = Invoke-RestMethod -Uri "http://localhost:8080/api/public/health" -Method GET
+    Write-Host "✅ Backend accessible: $($response.status)" -ForegroundColor Green
 } catch {
-    Write-Host "❌ Backend non accessible" -ForegroundColor Red
+    Write-Host "❌ Backend non accessible: $($_.Exception.Message)" -ForegroundColor Red
     exit 1
 }
 
-# Frontend
+# Test 2: Test de login avec CORS
+Write-Host "`n2. Test de login avec CORS..." -ForegroundColor Cyan
 try {
-    $frontendResponse = Invoke-WebRequest -Uri "http://localhost:5173" -Method GET -TimeoutSec 5
-    Write-Host "✅ Frontend accessible" -ForegroundColor Green
-} catch {
-    Write-Host "❌ Frontend non accessible" -ForegroundColor Red
-    exit 1
-}
+    $loginData = @{
+        username = "admin"
+        password = "admin123"
+    } | ConvertTo-Json
 
-# 2. Test CORS direct
-Write-Host "`n2. Test CORS direct..." -ForegroundColor Yellow
-try {
-    $headers = @{"Origin"="http://localhost:5173"}
-    $corsResponse = Invoke-WebRequest -Uri "http://localhost:8080/api/documents?page=0&size=20" -Method GET -Headers $headers
-    Write-Host "✅ Test CORS réussi" -ForegroundColor Green
-    Write-Host "   Status: $($corsResponse.StatusCode)" -ForegroundColor Gray
-    Write-Host "   CORS Headers présents: $($corsResponse.Headers.ContainsKey('Access-Control-Allow-Origin'))" -ForegroundColor Gray
+    $response = Invoke-RestMethod -Uri "http://localhost:8080/api/auth/login" -Method POST -ContentType "application/json" -Body $loginData
+    Write-Host "✅ Login réussi: Token reçu" -ForegroundColor Green
+    Write-Host "   Token: $($response.token.Substring(0, 20))..." -ForegroundColor Gray
 } catch {
-    Write-Host "❌ Test CORS échoué: $($_.Exception.Message)" -ForegroundColor Red
-}
-
-# 3. Test avec authentification
-Write-Host "`n3. Test avec authentification..." -ForegroundColor Yellow
-try {
-    $loginData = @{username="admin"; password="admin123"} | ConvertTo-Json
-    $loginResponse = Invoke-RestMethod -Uri "http://localhost:8080/api/auth/login" -Method POST -Body $loginData -ContentType "application/json"
-    $token = $loginResponse.token
-    Write-Host "✅ Connexion réussie" -ForegroundColor Green
-    
-    $authHeaders = @{
-        "Authorization"="Bearer $token"
-        "Origin"="http://localhost:5173"
+    Write-Host "❌ Login échoué: $($_.Exception.Message)" -ForegroundColor Red
+    if ($_.Exception.Response) {
+        $statusCode = $_.Exception.Response.StatusCode
+        Write-Host "   Code d'erreur: $statusCode" -ForegroundColor Red
     }
-    $authResponse = Invoke-WebRequest -Uri "http://localhost:8080/api/documents?page=0&size=20" -Method GET -Headers $authHeaders
-    Write-Host "✅ Test authentifié réussi" -ForegroundColor Green
-    Write-Host "   Status: $($authResponse.StatusCode)" -ForegroundColor Gray
-} catch {
-    Write-Host "❌ Test authentifié échoué: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-# 4. Instructions pour tester
-Write-Host "`n4. Instructions pour tester dans le navigateur:" -ForegroundColor Yellow
-Write-Host "   1. Ouvrez http://localhost:5173 dans votre navigateur" -ForegroundColor White
-Write-Host "   2. Connectez-vous avec: admin / admin123" -ForegroundColor White
-Write-Host "   3. Allez dans l'onglet 'Traitement de Documents'" -ForegroundColor White
-Write-Host "   4. Cliquez sur l'onglet 'Document uploadé'" -ForegroundColor White
-Write-Host "   5. Vérifiez que les documents s'affichent sans erreur CORS" -ForegroundColor White
-Write-Host "   6. Ouvrez la console du navigateur (F12) pour voir les logs" -ForegroundColor White
+# Test 3: Test CORS avec OPTIONS
+Write-Host "`n3. Test CORS preflight (OPTIONS)..." -ForegroundColor Cyan
+try {
+    $headers = @{
+        "Origin" = "http://localhost:5173"
+        "Access-Control-Request-Method" = "POST"
+        "Access-Control-Request-Headers" = "Content-Type"
+    }
+    
+    $response = Invoke-WebRequest -Uri "http://localhost:8080/api/auth/login" -Method OPTIONS -Headers $headers
+    Write-Host "✅ CORS preflight réussi: $($response.StatusCode)" -ForegroundColor Green
+    
+    # Vérifier les headers CORS
+    $corsHeaders = @()
+    if ($response.Headers["Access-Control-Allow-Origin"]) { $corsHeaders += "Allow-Origin" }
+    if ($response.Headers["Access-Control-Allow-Methods"]) { $corsHeaders += "Allow-Methods" }
+    if ($response.Headers["Access-Control-Allow-Headers"]) { $corsHeaders += "Allow-Headers" }
+    if ($response.Headers["Access-Control-Allow-Credentials"]) { $corsHeaders += "Allow-Credentials" }
+    
+    Write-Host "   Headers CORS presents: $($corsHeaders -join ', ')" -ForegroundColor Gray
+} catch {
+    Write-Host "❌ CORS preflight échoué: $($_.Exception.Message)" -ForegroundColor Red
+}
 
-Write-Host "`n✅ Test de correction CORS terminé!" -ForegroundColor Green
+Write-Host "`n🎯 Test terminé!" -ForegroundColor Yellow

@@ -20,3 +20,6 @@ if ($documentsResponse.content.Count -gt 0) {
 } else {
     Write-Host "Aucun document trouve dans la base de donnees" -ForegroundColor Red
 }
+
+
+

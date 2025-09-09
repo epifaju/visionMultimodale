@@ -25,7 +25,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/documents")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:5173",
+        "http://localhost:4173" }, allowCredentials = "true")
 @RequiredArgsConstructor
 @Slf4j
 public class DocumentController {

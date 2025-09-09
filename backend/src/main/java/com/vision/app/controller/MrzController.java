@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/mrz")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
 public class MrzController {
 
     private final MrzService mrzService;

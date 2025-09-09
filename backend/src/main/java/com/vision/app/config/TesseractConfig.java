@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Primary;
 
 /**
  * Configuration pour Tesseract OCR
+ * Note: Cette configuration est désactivée pour éviter les conflits d'initialisation
+ * L'initialisation de Tesseract est gérée directement dans OcrService
  */
 @Configuration
 public class TesseractConfig {
@@ -20,9 +22,10 @@ public class TesseractConfig {
 
     /**
      * Bean Tesseract principal utilisé par tous les services OCR
+     * Désactivé pour éviter les conflits d'initialisation
      */
-    @Bean
-    @Primary
+    // @Bean
+    // @Primary
     public Tesseract tesseract() {
         Tesseract tesseract = new Tesseract();
 

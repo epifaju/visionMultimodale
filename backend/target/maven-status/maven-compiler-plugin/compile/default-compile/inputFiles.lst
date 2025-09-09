@@ -1,4 +1,5 @@
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\config\TesseractConfig.java
+C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\service\DockerOcrService.java
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\controller\SimpleTestController.java
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\repository\AuditLogRepository.java
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\repository\UserRepository.java
@@ -43,6 +44,7 @@ C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\visi
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\controller\DocumentController.java
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\dto\RegisterRequest.java
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\model\Document.java
+C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\config\CorsConfig.java
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\service\TestAuthService.java
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\controller\PublicController.java
 C:\Users\epifa\cursor-workspace\visionMultimodale\backend\src\main\java\com\vision\app\dto\PageInfo.java

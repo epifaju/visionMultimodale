@@ -1,11 +1,15 @@
 import axios from 'axios';
+import { currentConfig } from '../config/api';
 
 // Configuration de base d'axios
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api', // URL directe vers le backend
+  baseURL: currentConfig.baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
+  // Configuration CORS pour les requêtes cross-origin
+  withCredentials: currentConfig.withCredentials,
+  timeout: 30000, // Timeout global de 30 secondes
 });
 
 // Intercepteur pour ajouter le token d'authentification
@@ -33,7 +37,10 @@ api.interceptors.request.use(
       // Pour les requêtes multipart/form-data, laisser axios gérer le Content-Type
       if (config.data instanceof FormData) {
         delete config.headers['Content-Type'];
-        console.log('📎 FormData detected - Content-Type header removed');
+        // Ajouter des headers spécifiques pour les uploads de fichiers
+        config.headers['Accept'] = 'application/json';
+        config.headers['X-Requested-With'] = 'XMLHttpRequest';
+        console.log('📎 FormData detected - Content-Type header removed, upload headers added');
       }
       
       return config;
@@ -47,7 +54,10 @@ api.interceptors.request.use(
       if (config.data instanceof FormData) {
         // Supprimer le Content-Type pour laisser le navigateur le définir avec la boundary
         delete config.headers['Content-Type'];
-        console.log('📎 FormData detected - Content-Type header removed');
+        // Ajouter des headers spécifiques pour les uploads de fichiers
+        config.headers['Accept'] = 'application/json';
+        config.headers['X-Requested-With'] = 'XMLHttpRequest';
+        console.log('📎 FormData detected - Content-Type header removed, upload headers added');
       }
     } else {
       console.log('⚠️ No auth token found - request will be sent without authentication');

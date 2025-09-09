@@ -7,7 +7,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/simple")
-@CrossOrigin(origins = "*")
 public class SimpleTestController {
 
     @GetMapping("/ping")

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  tesseract-ocr:
+    image: tesseractshadow/tesseract4re
+    container_name: tesseract-service
+    ports:
+      - "8081:80"
+    volumes:
+      - ./temp-images:/tmp/images
+    environment:
+      - TESSERACT_CMD=tesseract
+    networks:
+      - vision-network
+
+networks:
+  vision-network:
+    external: false
