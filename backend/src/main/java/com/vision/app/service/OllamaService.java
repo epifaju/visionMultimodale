@@ -130,6 +130,12 @@ public class OllamaService {
         try {
             log.info("🤖 Starting Ollama image analysis for file: {} with prompt: {}", fileName, prompt);
 
+            // Vérifier d'abord si Ollama est disponible
+            if (!isOllamaAvailable()) {
+                log.warn("⚠️ Ollama is not available - returning mock result");
+                return createMockResult(prompt);
+            }
+
             // Encoder l'image en base64 pour l'envoyer à Ollama
             String base64Image = java.util.Base64.getEncoder().encodeToString(imageBytes);
 
@@ -154,6 +160,18 @@ public class OllamaService {
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 Map<String, Object> responseBody = response.getBody();
+
+                // Vérifier si c'est une erreur de modèle
+                if (responseBody.containsKey("error")) {
+                    String errorMessage = (String) responseBody.get("error");
+                    log.error("❌ Ollama model error: {}", errorMessage);
+
+                    if (errorMessage.contains("model") && errorMessage.contains("not found")) {
+                        return createErrorResult("Modèle Ollama non trouvé. Veuillez installer le modèle " + model
+                                + " avec: ollama pull " + model);
+                    }
+                    return createErrorResult("Erreur Ollama: " + errorMessage);
+                }
 
                 OllamaResult result = new OllamaResult();
                 result.setSuccess(true);
@@ -181,6 +199,13 @@ public class OllamaService {
 
         } catch (Exception e) {
             log.error("❌ Ollama image analysis failed for {}: {}", fileName, e.getMessage(), e);
+
+            // Vérifier si c'est une erreur de modèle spécifique
+            if (e.getMessage().contains("model") && e.getMessage().contains("not found")) {
+                return createErrorResult("Modèle Ollama non trouvé. Veuillez installer le modèle " + model
+                        + " avec: ollama pull " + model);
+            }
+
             return createErrorResult("Image analysis failed: " + e.getMessage());
         }
     }
@@ -276,6 +301,69 @@ public class OllamaService {
             log.warn("Ollama availability check failed: {}", e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Vérifie si Ollama est disponible (version simplifiée)
+     */
+    private boolean isOllamaAvailable() {
+        try {
+            // Test de connexion simple sans traitement
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            Map<String, Object> testRequest = new HashMap<>();
+            testRequest.put("model", model);
+            testRequest.put("prompt", "test");
+            testRequest.put("stream", false);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(testRequest, headers);
+
+            // Test avec un timeout court
+            restTemplate.setRequestFactory(new org.springframework.http.client.SimpleClientHttpRequestFactory());
+            ((org.springframework.http.client.SimpleClientHttpRequestFactory) restTemplate.getRequestFactory())
+                    .setConnectTimeout(5000);
+            ((org.springframework.http.client.SimpleClientHttpRequestFactory) restTemplate.getRequestFactory())
+                    .setReadTimeout(5000);
+
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                    ollamaUrl,
+                    HttpMethod.POST,
+                    entity,
+                    (Class<Map<String, Object>>) (Class<?>) Map.class);
+
+            return response.getStatusCode() == HttpStatus.OK;
+        } catch (Exception e) {
+            log.debug("Ollama availability check failed: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Crée un résultat mock quand Ollama n'est pas disponible
+     */
+    private OllamaResult createMockResult(String prompt) {
+        OllamaResult result = new OllamaResult();
+        result.setSuccess(true);
+        result.setModel(model + " (mock)");
+        result.setPrompt(prompt);
+        result.setResponse("🤖 Analyse IA simulée\n\n" +
+                "Ollama n'est pas disponible sur ce système. " +
+                "Pour utiliser l'analyse IA réelle, veuillez :\n\n" +
+                "1. Installer Ollama : https://ollama.ai/\n" +
+                "2. Installer le modèle : ollama pull " + model + "\n" +
+                "3. Démarrer Ollama : ollama serve\n\n" +
+                "En mode simulation, cette réponse est générée automatiquement.");
+        result.setDone(true);
+
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("totalDuration", 1000000000L); // 1 seconde simulée
+        metadata.put("evalCount", 50);
+        metadata.put("promptEvalCount", 10);
+        metadata.put("evalDuration", 800000000L);
+        result.setMetadata(metadata);
+
+        return result;
     }
 
     /**
